@@ -13,11 +13,12 @@ typedef struct{
     int inode_number;
     char inode_type;
     char inode_rights;
-    char timestamp_access;
-    char timestamp_modify;
-    char timestamp_metadata;
+    struct timespec timestamp_access;
+    struct timespec timestamp_modify;
+    struct timespec timestamp_metadata;
     int db_size;
     int db_count;
     char* db_pt;    // datablock pointer
 } inode_t;
 
+s
