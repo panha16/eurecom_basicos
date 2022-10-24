@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <time.h>
+#include <sys/stat.h>
 #include "fs.h"
 
 int main(int argc, char* argv[]){
@@ -60,7 +62,23 @@ int main(int argc, char* argv[]){
     superblock_t super;
     super.db_count = 2000;
     super.inode_count = 100;
-    printf("%d \n", sizeof(super));
+    inode_t inode;
+
+    struct stat info;
+    if (stat("/", &info) != 0)
+        perror("stat() error");
+    else {
+        puts("stat() returned the following information about root f/s:");
+        printf("  inode:   %d\n",   (int) info.st_ino);
+        printf(" dev id:   %d\n",   (int) info.st_dev);
+        printf("   mode:   %08x\n",       info.st_mode);
+        printf("  links:   %d\n",         info.st_nlink);
+        printf("    uid:   %d\n",   (int) info.st_uid);
+        printf("    gid:   %d\n",   (int) info.st_gid);
+        printf("  atime:   %d\n",   (int) info.st_atime);
+  }
+
+    printf("%d \n", sizeof(inode));
     return 0;
 }
 

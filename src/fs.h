@@ -20,5 +20,3 @@ typedef struct{
     int db_count;
     char* db_pt;    // datablock pointer
 } inode_t;
-
-s
