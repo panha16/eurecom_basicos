@@ -55,7 +55,12 @@ int main(int argc, char* argv[]){
 
     for (index = optind; index < argc; index++){
         printf ("Non-option argument %s at index %d \n", argv[index], index);
+        
     } 
+    superblock_t super;
+    super.db_count = 2000;
+    super.inode_count = 100;
+    printf("%d \n", sizeof(super));
     return 0;
 }
 

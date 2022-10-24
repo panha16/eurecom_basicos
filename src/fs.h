@@ -2,12 +2,12 @@
 
 
 typedef struct{
-    int db_count = 2000;
-    int inode_count = 100;
+    int db_count;
+    int inode_count;
     char* inode_table_pt;
     char* free_inode_pt;
     char* free_db_pt;
-}superblock;
+} superblock_t;
 
 typedef struct{
     int inode_number;
@@ -18,6 +18,6 @@ typedef struct{
     char timestamp_metadata;
     int db_size;
     int db_count;
-    char * db_pt;    //datablock pointer
-}inode;
+    char* db_pt;    // datablock pointer
+} inode_t;
 
