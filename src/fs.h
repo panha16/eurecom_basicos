@@ -1,5 +1,5 @@
 #define DATABLOCK_SIZE 4096
-
+#define SUPERBLOCK_SIZE 32
 
 typedef struct{
     int db_count;
