@@ -18,5 +18,6 @@ typedef struct{
     char timestamp_metadata;
     int db_size;
     int db_count;
-    int * db_pt;    //datablock pointer
+    char * db_pt;    //datablock pointer
 }inode;
+
