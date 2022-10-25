@@ -6,27 +6,28 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <ctype.h>
 #include <time.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <stdint.h>
 #include "fs.h"
 
 
 int main(int argc, char* argv[]){
 
-    // int rflag = 0;
-    // int dflag = 0;
-    // int bflag = 0;
-    // int kflag = 0;
-    // int mflag = 0;
-    // int gflag = 0;
+    int rflag;
+    // int dflag;
+    int bflag;
+    int kflag;
+    int mflag;
+    int gflag;
     static int stat_flag;
     
-    char *rvalue = NULL;
-    char *dvalue = NULL;
-    int index;
+    // char *rvalue = NULL;
+    // char *dvalue = NULL;
+    char* src_file;
+    char* dst_path;
     char* fs_name = argv[1];
 
     if (argc < 4) {
@@ -36,20 +37,61 @@ int main(int argc, char* argv[]){
 
     char* commands[] = {"create", "write", "read","remove", "size", "ls"};
 
+    // for read & write commands we only have one source file
+    // so it is reasonable to have only one stat struct
+    struct stat src_file_stat;
 
-
-    if (strcmp(argv[2], commands[1]) == 0){
+    if ((strcmp(argv[2], commands[1]) == 0) && (argc > 4)){
         printf("write command recognized \n");
+        printf("filesystem: %s, source file: %s, dest file: %s \n", fs_name, argv[3], argv[4]);
+        char* src_file = argv[3];
+        char* dst_path = argv[4];
+
+        if (stat(src_file, &src_file_stat) == 0){
+            
+        } else {
+            // File can't be located
+            printf("Error!!! \n");
+        }
+
     }
 
     else if (strcmp(argv[2], commands[4]) == 0){
+        printf("size command recognized, stat flag state: %d \n", stat_flag);
+        char* src_file = argv[argc-1]; // according to the project description, path-to-dir comes last
         for (int i = 2; i < argc; i++){
             if (strcmp(argv[i], "-stat") == 0){
                 stat_flag = 1;
+            }
+            if (strcmp(argv[i], "-r") == 0){
+                rflag = 1;
+            }
+            if (strcmp(argv[i], "-b") == 0){
+                bflag = 1;
+            }
+            if ((strcmp(argv[i], "-mb") == 0) || (strcmp(argv[i], "-MB") == 0) 
+                || (strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "-M") == 0)){
+                mflag = 1;
+                break;
+            }
+            if ((strcmp(argv[i], "-kb") == 0) || (strcmp(argv[i], "-kb") == 0)
+                || (strcmp(argv[i], "-k") == 0) || (strcmp(argv[i], "-K") == 0)){
+                printf("%size will be in Kbytes \n");
+                kflag = 1;
+                break;
+            }
+            if ((strcmp(argv[i], "-gb") == 0) || (strcmp(argv[i], "-GB") == 0)
+                || (strcmp(argv[i], "-g") == 0) || (strcmp(argv[i], "-G") == 0)){
+                gflag = 1;
                 break;
             }
         }
-        printf("size command recognized, stat flag state: %d \n", stat_flag);
+        if (stat(src_file, &src_file_stat) == 0){
+            printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
+        } else {
+            // File can't be located
+            printf("Error!!! \n");
+        }
     }
     exit (0);
     }
