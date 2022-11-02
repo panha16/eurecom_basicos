@@ -20,3 +20,7 @@ typedef struct{
     int db_count;
     char* db_pt;    // datablock pointer
 } inode_t;
+
+
+char read(const char *file_path);
+void remove(const char *file_or_directory_path);
