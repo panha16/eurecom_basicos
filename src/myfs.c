@@ -76,7 +76,7 @@ int main(int argc, char* argv[]){
             }
             if ((strcmp(argv[i], "-kb") == 0) || (strcmp(argv[i], "-kb") == 0)
                 || (strcmp(argv[i], "-k") == 0) || (strcmp(argv[i], "-K") == 0)){
-                printf("%size will be in Kbytes \n");
+                printf("size will be in Kbytes \n");
                 kflag = 1;
                 break;
             }
@@ -92,6 +92,27 @@ int main(int argc, char* argv[]){
             // File can't be located
             printf("Error!!! \n");
         }
+    }
+
+    else if (strcmp(argv[2],commands[3])==0){     
+        printf("remove command recognized \n");
+        if (argv[4]!=0){        //user wants to remove a file
+            remove(argv[4]);
+            printf("succesfully removed file %s\n", argv[4]);
+        }   
+        else {      //user wants to remove a directory
+            if (ls(argv[3]) == 0){      //directory is empty
+                remove(argv[3]);
+                printf("succesfully removed directory %s\n", argv[3]);
+            }
+            else printf("cannot use remove, directory is not empty\n");
+
+        }
+    }
+
+    else if (strcmp(argv[2],commands[2]) == 0){
+        printf("read command recognized \n");
+        
     }
     exit (0);
     }
