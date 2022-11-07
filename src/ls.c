@@ -36,6 +36,7 @@ void ls(const char *dir,int op_a,int op_l)
 	}
 	if(!op_l)
 	printf("\n");
+	return 0;
 }
 
 int main(int argc, const char *argv[])
