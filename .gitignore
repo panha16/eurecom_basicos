@@ -1,2 +1,3 @@
 # We ignore binaries
 src/bin/*
+*.exe

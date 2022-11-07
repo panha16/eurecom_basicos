@@ -10,5 +10,14 @@ make
 ./bin/myfs
 ```
 
+## Structure 
+| Superblock                                                                                       	| inodes 	| data blocks 	|
+|--------------------------------------------------------------------------------------------------	|--------	|-------------	|
+| Type, # of Inodes, # of DB * to the inode table, * to list of free inodes * to list of free DB   	| 10000  	| 1500        	|
+| 32 bytes                                                                                         	| 0.72   MB	| 6.144 MB  	|
 
+### Repartition:
+- William: ls, create
+- Guillaume: read, remove
+- Ahmed: write, size
 ### Authors: [@chieu](https://gitlab.eurecom.fr/chieu), [@ghaleb](https://gitlab.eurecom.fr/ghaleb) & [@ung](https://gitlab.eurecom.fr/ung)
