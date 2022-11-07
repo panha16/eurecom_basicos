@@ -22,7 +22,6 @@ typedef struct{
     char* db_pt;    // datablock pointer
 } inode_t;
 
-
 char read(const char *file_path);
 void remove1(const char *file_or_directory_path);
 int ls(const char *dir,int op_a,int op_l);

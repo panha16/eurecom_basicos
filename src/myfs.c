@@ -43,11 +43,17 @@ int main(int argc, char* argv[]){
     struct stat src_file_stat;
 
     // --------------------------- SUPERBLOCK ------------------------ //
-    superblock.inode_count = 10000;
-    superblock.db_count = 1500;   
+    char inode_table[10000];
+    int free_inode_table[10000];
+    char free_db_table[1500];
     
-    printf("%d \n", superblock.db_count);
+    superblock.inode_count = 10000;
+    superblock.db_count = 1500;
+    superblock.inode_table_pt = (char *) &inode_table;
+    superblock.free_inode_pt = (char *) &free_inode_table;
+    superblock.free_db_pt = (char *) &free_db_table;
 
+    printf("%d \n", superblock.db_count);
 
     // ------------------------ WRITE --------------------------- //
 
@@ -84,7 +90,7 @@ int main(int argc, char* argv[]){
             if ((strcmp(argv[i], "-mb") == 0) || (strcmp(argv[i], "-MB") == 0) 
                 || (strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "-M") == 0)){
                 mflag = 1;
-                break;
+                break;  
             }
             if ((strcmp(argv[i], "-kb") == 0) || (strcmp(argv[i], "-kb") == 0)
                 || (strcmp(argv[i], "-k") == 0) || (strcmp(argv[i], "-K") == 0)){
