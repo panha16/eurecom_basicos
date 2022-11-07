@@ -48,7 +48,7 @@ int main(int argc, char* argv[]){
         char* dst_path = argv[4];
 
         if (stat(src_file, &src_file_stat) == 0){
-            printf("Destination ile size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
+            
         } else {
             // File can't be located
             printf("Error!!! \n");
@@ -97,12 +97,12 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
         if (argv[4]!=0){        //user wants to remove a file
-            remove(argv[4]);
+            remove_file(argv[4]);
             printf("succesfully removed file %s\n", argv[4]);
         }   
         else {      //user wants to remove a directory
             if (ls(argv[3]) == 0){      //directory is empty
-                remove(argv[3]);
+                remove_file(argv[3]);
                 printf("succesfully removed directory %s\n", argv[3]);
             }
             else printf("cannot use remove, directory is not empty\n");
@@ -115,8 +115,6 @@ int main(int argc, char* argv[]){
         if (!read(argv[3])) printf("file could not be read\n");
         printf("successfully read following file : %d \n",read(argv[3]));
         
-    } else {
-        printf("Command recognized but argument count is wrong \n");
     }
     exit (0);
     }
