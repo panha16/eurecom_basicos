@@ -115,7 +115,6 @@ int main(int argc, char* argv[]){
         if (!read(argv[3])) printf("file could not be read\n");
         printf("successfully read following file : %d \n",read(argv[3]));
         
-        
     }
     exit (0);
     }
