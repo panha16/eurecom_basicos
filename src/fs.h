@@ -10,6 +10,7 @@ typedef struct{
 } superblock_t;
 
 typedef struct{
+    char filename[32];
     int inode_number;
     char inode_type;
     char inode_rights;
@@ -21,6 +22,6 @@ typedef struct{
     char* db_pt;    // datablock pointer
 } inode_t;
 
-
-int read_file(const char *file_path);
-void remove_file(const char *file_or_directory_path);
+char read(const char *file_path);
+void remove1(const char *file_or_directory_path);
+int ls(const char *dir,int op_a,int op_l);

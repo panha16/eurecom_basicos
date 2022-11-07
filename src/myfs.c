@@ -23,6 +23,7 @@ int main(int argc, char* argv[]){
     int mflag;
     int gflag;
     static int stat_flag;
+    superblock_t superblock;
     
     // char *rvalue = NULL;
     // char *dvalue = NULL;
@@ -41,6 +42,21 @@ int main(int argc, char* argv[]){
     // so it is reasonable to have only one stat struct
     struct stat src_file_stat;
 
+    // --------------------------- SUPERBLOCK ------------------------ //
+    char inode_table[10000];
+    int free_inode_table[10000];
+    char free_db_table[1500];
+    
+    superblock.inode_count = 10000;
+    superblock.db_count = 1500;
+    superblock.inode_table_pt = (char *) &inode_table;
+    superblock.free_inode_pt = (char *) &free_inode_table;
+    superblock.free_db_pt = (char *) &free_db_table;
+
+    printf("%d \n", superblock.db_count);
+
+    // ------------------------ WRITE --------------------------- //
+
     if ((strcmp(argv[2], commands[1]) == 0) && (argc > 4)){
         printf("write command recognized \n");
         printf("filesystem: %s, source file: %s, dest file: %s \n", fs_name, argv[3], argv[4]);
@@ -53,9 +69,11 @@ int main(int argc, char* argv[]){
             // File can't be located
             printf("Error!!! \n");
         }
-
     }
 
+    // ------------------------ END OF WRITE --------------------------- //
+
+    // ------------------------ SIZE --------------------------- //
     else if (strcmp(argv[2], commands[4]) == 0){
         printf("size command recognized, stat flag state: %d \n", stat_flag);
         char* src_file = argv[argc-1]; // according to the project description, path-to-dir comes last
@@ -72,7 +90,7 @@ int main(int argc, char* argv[]){
             if ((strcmp(argv[i], "-mb") == 0) || (strcmp(argv[i], "-MB") == 0) 
                 || (strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "-M") == 0)){
                 mflag = 1;
-                break;
+                break;  
             }
             if ((strcmp(argv[i], "-kb") == 0) || (strcmp(argv[i], "-kb") == 0)
                 || (strcmp(argv[i], "-k") == 0) || (strcmp(argv[i], "-K") == 0)){
@@ -93,6 +111,8 @@ int main(int argc, char* argv[]){
             printf("Error!!! \n");
         }
     }
+    // ------------------------ END OF SIZE --------------------------- //
+
 
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
@@ -101,11 +121,11 @@ int main(int argc, char* argv[]){
             printf("succesfully removed file %s\n", argv[4]);
         }   
         else {      //user wants to remove a directory
-            if (ls(argv[3]) == 0){      //directory is empty
-                remove_file(argv[3]);
-                printf("succesfully removed directory %s\n", argv[3]);
-            }
-            else printf("cannot use remove, directory is not empty\n");
+            // if (ls(argv[3],0,0) == 0){      //directory is empty
+            //     remove(argv[3]);
+            //     printf("succesfully removed directory %s\n", argv[3]);
+            // }
+            // else printf("cannot use remove, directory is not empty\n");
 
         }
     }
