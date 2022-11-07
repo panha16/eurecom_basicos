@@ -1,7 +1,7 @@
 #include "fs.h"
 #include <stdio.h>
 
-int read(const char *path_to_file){
+int read_file(const char *path_to_file){
     FILE *fptr;
     char file_content[1000];
     fptr = fopen("path_to_file","r");

@@ -112,8 +112,8 @@ int main(int argc, char* argv[]){
 
     else if (strcmp(argv[2],commands[2]) == 0){
         printf("read command recognized \n");
-        if (!read(argv[3])) printf("file could not be read\n");
-        printf("successfully read following file : %d \n",read(argv[3]));
+        if (!read_file(argv[3])) printf("file could not be read\n");
+        printf("successfully read following file : %d \n",read_file(argv[3]));
         
     }
     exit (0);

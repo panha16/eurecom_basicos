@@ -22,10 +22,5 @@ typedef struct{
 } inode_t;
 
 
-<<<<<<< HEAD
-int read(const char *file_path);
-void remove(const char *file_or_directory_path);
-=======
-char read(const char *file_path);
-void remove1(const char *file_or_directory_path);
->>>>>>> 76863d18e8eedc94ed445ed9831f8e0e56e8e23b
+int read_file(const char *file_path);
+void remove_file(const char *file_or_directory_path);
