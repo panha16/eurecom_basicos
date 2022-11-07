@@ -22,5 +22,5 @@ typedef struct{
 } inode_t;
 
 
-char read(const char *file_path);
+int read(const char *file_path);
 void remove(const char *file_or_directory_path);
