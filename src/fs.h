@@ -1,5 +1,10 @@
-#define DATABLOCK_SIZE 4096
+/*!  fs.h
+    File used for macros and structure definitions.
+*/
+
+#define DATABLOCK_SIZE 4096 /*! */
 #define SUPERBLOCK_SIZE 32
+#define INODE_COUNT 10000 /*! Number of inodes in the FS */
 
 typedef struct{
     int db_count;

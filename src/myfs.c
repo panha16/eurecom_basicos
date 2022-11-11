@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include "fs.h"
 
 
@@ -90,22 +91,22 @@ int main(int argc, char* argv[]){
             if ((strcmp(argv[i], "-mb") == 0) || (strcmp(argv[i], "-MB") == 0) 
                 || (strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "-M") == 0)){
                 mflag = 1;
-                break;  
             }
             if ((strcmp(argv[i], "-kb") == 0) || (strcmp(argv[i], "-kb") == 0)
                 || (strcmp(argv[i], "-k") == 0) || (strcmp(argv[i], "-K") == 0)){
                 printf("size will be in Kbytes \n");
                 kflag = 1;
-                break;
             }
             if ((strcmp(argv[i], "-gb") == 0) || (strcmp(argv[i], "-GB") == 0)
                 || (strcmp(argv[i], "-g") == 0) || (strcmp(argv[i], "-G") == 0)){
                 gflag = 1;  
-                break;
             }
         }
         if (stat(src_file, &src_file_stat) == 0){
             printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
+
+            printf("%i \n", is_inode_free(100, free_inode_table));
+            printf("%d \n", get_free_inode(&free_inode_table));
         } else {
             // File can't be located
             printf("Error!!! \n");
@@ -117,8 +118,8 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
         if (argv[4]!=0){        //user wants to remove a file
-            remove_file(argv[4]);
-            printf("succesfully removed file %s\n", argv[4]);
+            // remove_file(argv[4]);
+            // printf("succesfully removed file %s\n", argv[4]);
         }   
         else {      //user wants to remove a directory
             // if (ls(argv[3],0,0) == 0){      //directory is empty
@@ -132,8 +133,8 @@ int main(int argc, char* argv[]){
 
     else if (strcmp(argv[2],commands[2]) == 0){
         printf("read command recognized \n");
-        if (!read_file(argv[3])) printf("file could not be read\n");
-        printf("successfully read following file : %d \n",read_file(argv[3]));
+        // if (!read_file(argv[3])) printf("file could not be read\n");
+        // printf("successfully read following file : %d \n",read_file(argv[3]));
         
     }
     exit (0);
