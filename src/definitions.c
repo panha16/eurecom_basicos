@@ -5,10 +5,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include "fs.h"
 
+inode_t null_inode;
+// get inode from file name 
+inode_t get_inode(char* filename, superblock_t superblock){
+    inode_t table[10000];
+    memcpy(superblock.inode_table_pt, table, 10000); 
+    for (int i = 0; i < INODE_COUNT; i++){
+        if (strcmp(table[i].filename ,filename) == 0){
+            printf("%d \n", i);
+            printf("%s found \n", table[i].filename);
+            return table[i];
+        }
+    }
+    fprintf(stderr, "inode for %s not found \n", filename);
+    return null_inode;
+}
 
-// get inode from file name - gui
 // is inode free
 // is db free - gui
 // return index of free inode
@@ -33,5 +48,6 @@ int get_free_inode(int* inode_table){
 int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t* inode_table){
     inode_table[inode_number] = inode;
     free_inode_table[inode_number] = 1;
+    return 1;
 }
 /*  Not finished */

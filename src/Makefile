@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall
+CFLAGS = -Wunused-variable
 TARGETS = myfs 
 
 .PHONY: all clean
@@ -9,4 +9,4 @@ all: $(TARGETS)
 myfs: myfs.c
 	$(CC) $(CFLAGS) -o bin/$@ definitions.c $@.c
 clean:
-	rm -f $(TARGETS)
+	rm -f bin/$(TARGETS)
