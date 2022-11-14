@@ -8,6 +8,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 #include "fs.h"
 
 inode_t null_inode;
@@ -62,17 +63,19 @@ int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table){
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
     char* buf = malloc(fs_size+1);
     ssize_t bytes_read = read(fd, buf, fs_size);
-    printf("%Ld \n", bytes_read);
+    printf("%ld \n", bytes_read);
+
     free(buf);
     return 0;
 }
 
-int myfs_init(char* fsname, int size){
-    int fd = open(fsname, O_RDONLY);
+int myfs_init(char* fs_name, int size){
+    int fd = open(fs_name, O_WRONLY | O_CREAT);
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
     char* buf = malloc(fs_size+1);
     ssize_t bytes_written = write(fd, buf, fs_size);
-    printf("%Ld \n", bytes_read);
+    printf("Bytes written: %ld \n", bytes_written);
     free(buf);
+    if (close(fd) == 0) printf("filesystem %s fd closed sucessfully \n", fs_name);
     return 0;
 }

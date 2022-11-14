@@ -34,4 +34,4 @@ int ls(const char *dir,int op_a,int op_l);
 inode_t get_inode(char* file_or_directory_path, inode_t* inode_table);
 int get_free_inode(int* inode_table);
 bool is_inode_free(int inode_nb, int* inode_table);
-int myfs_size(char* path_to_directory, int recursive, char multiple, int stat, inode_t* table);
+int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multiple, int stat, inode_t* table);

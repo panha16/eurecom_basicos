@@ -103,7 +103,8 @@ int main(int argc, char* argv[]){
         }
         if (stat(src_file, &src_file_stat) == 0){
             printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
-            myfs_size(src_file, rflag, '\0', 0, inode_table);
+            myfs_size(fs_name, src_file, rflag, '\0', 0, inode_table);
+            myfs_load(fs_name, superblock, inode_table);
         } else {
             // File can't be located
             printf("Error!!! \n");
