@@ -6,18 +6,18 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <fcntl.h>
+#include <unistd.h>
 #include "fs.h"
 
 inode_t null_inode;
 // get inode from file name 
-inode_t get_inode(char* filename, superblock_t superblock){
-    inode_t table[10000];
-    memcpy(superblock.inode_table_pt, table, 10000); 
+inode_t get_inode(char* filename, inode_t* inode_table){
     for (int i = 0; i < INODE_COUNT; i++){
-        if (strcmp(table[i].filename ,filename) == 0){
+        if (strcmp(inode_table[i].filename ,filename) == 0){
             printf("%d \n", i);
-            printf("%s found \n", table[i].filename);
-            return table[i];
+            printf("%s found \n", inode_table[i].filename);
+            return inode_table[i];
         }
     }
     fprintf(stderr, "inode for %s not found \n", filename);
@@ -28,6 +28,11 @@ inode_t get_inode(char* filename, superblock_t superblock){
 // is db free - gui
 // return index of free inode
 // return index of free db - gui
+int get_free_db(int* db_table){
+    for (int i = 0; i < DB_COUNT; i++)
+        if (db_table[i] == 0) return i;
+    return -1;
+}
 // does the file exist
 bool is_inode_free(int inode_nb, int* inode_table){
     return (inode_table[inode_nb] == 0);
@@ -51,3 +56,23 @@ int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t
     return 1;
 }
 /*  Not finished */
+
+int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table){
+    int fd = open(fsname, O_RDONLY);
+    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
+    char* buf = malloc(fs_size+1);
+    ssize_t bytes_read = read(fd, buf, fs_size);
+    printf("%Ld \n", bytes_read);
+    free(buf);
+    return 0;
+}
+
+int myfs_init(char* fsname, int size){
+    int fd = open(fsname, O_RDONLY);
+    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
+    char* buf = malloc(fs_size+1);
+    ssize_t bytes_written = write(fd, buf, fs_size);
+    printf("%Ld \n", bytes_read);
+    free(buf);
+    return 0;
+}

@@ -46,11 +46,11 @@ int main(int argc, char* argv[]){
     // --------------------------- SUPERBLOCK ------------------------ //
     inode_t inode_table[10000];
     int free_inode_table[10000];
-    char free_db_table[1500];
+    int free_db_table[1500];
     
     superblock.inode_count = 10000;
     superblock.db_count = 1500;
-    superblock.inode_table_pt = (inode_t *) &inode_table;
+    superblock.inode_table_pt = inode_table;
     superblock.free_inode_pt = (int *) &free_inode_table;
     superblock.free_db_pt = (char *) &free_db_table;
     printf("%p \n", (void*) &inode_table);
@@ -103,16 +103,7 @@ int main(int argc, char* argv[]){
         }
         if (stat(src_file, &src_file_stat) == 0){
             printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
-            
-            inode_t test_inode = {
-                .filename = "/",
-                .inode_number = 77
-            };
-            printf("%p \n",superblock.inode_table_pt);
-            memcpy(superblock.inode_table_pt, &test_inode, 2);
-
-            inode_t result = get_inode(src_file, superblock);
-            printf("%d - %s \n", result.inode_number, result.filename);
+            myfs_size(src_file, rflag, '\0', 0, inode_table);
         } else {
             // File can't be located
             printf("Error!!! \n");

@@ -10,10 +10,18 @@
 #include "fs.h"
 
 
-int size(char* path_to_directory, int recursive, char multiple, int stat){
-    inode_t inode = get_inode(path_to_directory);
-    if (inode.inode_type == 'd'){
+int myfs_size(char* path_to_directory, int recursive, char multiple, int stat, inode_t* table){
+    inode_t inode = get_inode(path_to_directory, table);
+
+    if (strcmp(path_to_directory, "/") == 0){
+        
+        printf("Ok, we're dealing with the bigboss root \n");
+
+        return 0;
+    }
+    else if (inode.inode_type == 'd'){
         printf("Ok, function is good \n");
+        return 0;
     } else {
         fprintf(stderr, "Invalid path. Path must point to directory \n");
         printf("usage: ./myfs <fs> <opt -b/-k/-m/-g> <opt -r> <path-to-directory> \n");

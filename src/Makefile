@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wunused-variable
+CFLAGS = -Wall
 TARGETS = myfs 
 
 .PHONY: all clean
@@ -7,6 +7,6 @@ TARGETS = myfs
 all: $(TARGETS)
 # All binaries will be stored under src/bin/
 myfs: myfs.c
-	$(CC) $(CFLAGS) -o bin/$@ definitions.c $@.c
+	$(CC) $(CFLAGS) -o bin/$@ size.c definitions.c $@.c
 clean:
 	rm -f bin/$(TARGETS)
