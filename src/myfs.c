@@ -11,6 +11,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include "fs.h"
 
 
@@ -43,17 +44,16 @@ int main(int argc, char* argv[]){
     struct stat src_file_stat;
 
     // --------------------------- SUPERBLOCK ------------------------ //
-    char inode_table[10000];
+    inode_t inode_table[10000];
     int free_inode_table[10000];
     char free_db_table[1500];
     
     superblock.inode_count = 10000;
     superblock.db_count = 1500;
-    superblock.inode_table_pt = (char *) &inode_table;
-    superblock.free_inode_pt = (char *) &free_inode_table;
+    superblock.inode_table_pt = (inode_t *) &inode_table;
+    superblock.free_inode_pt = (int *) &free_inode_table;
     superblock.free_db_pt = (char *) &free_db_table;
-
-    printf("%d \n", superblock.db_count);
+    printf("%p \n", (void*) &inode_table);
 
     // ------------------------ WRITE --------------------------- //
 
@@ -90,22 +90,29 @@ int main(int argc, char* argv[]){
             if ((strcmp(argv[i], "-mb") == 0) || (strcmp(argv[i], "-MB") == 0) 
                 || (strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "-M") == 0)){
                 mflag = 1;
-                break;  
             }
             if ((strcmp(argv[i], "-kb") == 0) || (strcmp(argv[i], "-kb") == 0)
                 || (strcmp(argv[i], "-k") == 0) || (strcmp(argv[i], "-K") == 0)){
                 printf("size will be in Kbytes \n");
                 kflag = 1;
-                break;
             }
             if ((strcmp(argv[i], "-gb") == 0) || (strcmp(argv[i], "-GB") == 0)
                 || (strcmp(argv[i], "-g") == 0) || (strcmp(argv[i], "-G") == 0)){
                 gflag = 1;  
-                break;
             }
         }
         if (stat(src_file, &src_file_stat) == 0){
             printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
+            
+            inode_t test_inode = {
+                .filename = "/",
+                .inode_number = 77
+            };
+            printf("%p \n",superblock.inode_table_pt);
+            memcpy(superblock.inode_table_pt, &test_inode, 2);
+
+            inode_t result = get_inode(src_file, superblock);
+            printf("%d - %s \n", result.inode_number, result.filename);
         } else {
             // File can't be located
             printf("Error!!! \n");
@@ -117,8 +124,8 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
         if (argv[4]!=0){        //user wants to remove a file
-            remove_file(argv[4]);
-            printf("succesfully removed file %s\n", argv[4]);
+            if (remove_file(argv[4]) == 0) printf("succesfully removed file %s\n", argv[4]);
+            else printf("error removing the file\n");
         }   
         else {      //user wants to remove a directory
             // if (ls(argv[3],0,0) == 0){      //directory is empty
@@ -132,8 +139,8 @@ int main(int argc, char* argv[]){
 
     else if (strcmp(argv[2],commands[2]) == 0){
         printf("read command recognized \n");
-        if (!read_file(argv[3])) printf("file could not be read\n");
-        printf("successfully read following file : %d \n",read_file(argv[3]));
+        // if (!read_file(argv[3])) printf("file could not be read\n");
+        // printf("successfully read following file : %d \n",read_file(argv[3]));
         
     }
     exit (0);
