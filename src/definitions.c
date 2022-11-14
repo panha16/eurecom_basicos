@@ -60,19 +60,21 @@ int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t
 
 int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table){
     int fd = open(fsname, O_RDONLY);
-    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
+    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096; // code written for test purposes
     char* buf = malloc(fs_size+1);
     ssize_t bytes_read = read(fd, buf, fs_size);
-    printf("%ld \n", bytes_read);
-
+    printf("Bytes read: %ld \n", bytes_read);
+    printf("Value %s \n", buf); // we read whats written in fsname
+    // memcpy(inode_table,b+24,10000* sizeof(inode_t));
     free(buf);
     return 0;
 }
 
 int myfs_init(char* fs_name, int size){
-    int fd = open(fs_name, O_WRONLY | O_CREAT);
+    int fd = open(fs_name, O_WRONLY | O_CREAT, 0666);
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
     char* buf = malloc(fs_size+1);
+    write(fd,"1500", sizeof(int)); // we write the datablock count (we will read it in myfs_load)
     ssize_t bytes_written = write(fd, buf, fs_size);
     printf("Bytes written: %ld \n", bytes_written);
     free(buf);

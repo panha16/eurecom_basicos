@@ -53,7 +53,6 @@ int main(int argc, char* argv[]){
     superblock.inode_table_pt = inode_table;
     superblock.free_inode_pt = (int *) &free_inode_table;
     superblock.free_db_pt = (char *) &free_db_table;
-    printf("%p \n", (void*) &inode_table);
 
     // ------------------------ WRITE --------------------------- //
 
