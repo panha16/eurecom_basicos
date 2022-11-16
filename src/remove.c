@@ -2,14 +2,14 @@
 #include <string.h>
 
 int remove_file(const char *file_or_directory_path){
-    //retrieving inode_t from file_or_directory_path    
+    //retrieving inode_t from file_or_directory_path to empty it
     inode_t r_inode = get_inode(file_or_directory_path,superblock);
-    inode_t null_inode;
     //empyting datablocks
     r_inode.db_count = 0;
     r_inode.db_size = 0;
 
     //updating tables linked to inode
+    inode_t null_inode;
     inode_table[r_inode.inode_number] = null_inode;
     free_inode_table[r_inode.inode_number] = 0;
     free_db_table[r_inode.db_pt] = 0;
