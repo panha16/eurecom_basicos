@@ -62,7 +62,7 @@ int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t
 }
 /*  Not finished */
 
-int myfs_load(char* fsname, superblock_t superblock, char* inode_table, char* datablocks){
+int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks){
     int fd = open(fsname, O_RDONLY);
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT*DATABLOCK_SIZE; // code written for test purposes
     char* buf = malloc(fs_size);
@@ -73,6 +73,15 @@ int myfs_load(char* fsname, superblock_t superblock, char* inode_table, char* da
     memcpy(datablocks, buf + INODE_COUNT * sizeof(inode_t), DB_COUNT * DATABLOCK_SIZE);
 
     free(buf);
+    return 0;
+}
+
+int load_inodes(char* fsname, inode_t* inode_table){
+    int fd = open(fsname, O_RDONLY);
+    char* buf = malloc((INODE_COUNT * sizeof(inode_t)) + 1);
+    ssize_t bytes_read = read(fd, buf+ sizeof(superblock_t) , INODE_COUNT * sizeof(inode_t));
+    printf("Bytes read: %ld \n", bytes_read);
+    memcpy(inode_table, buf, INODE_COUNT * sizeof(inode_t));
     return 0;
 }
 

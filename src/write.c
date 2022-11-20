@@ -28,23 +28,22 @@ int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, c
 
         int free = get_free_db(dbs);
         int free_inode = get_free_inode(inode_table);
-        inode_t* object = malloc(sizeof(inode_t));
-        strcpy(object->filename, input_file);
-        object->inode_number=100;
+        char* object = malloc(sizeof(inode_t));
+        sprintf(object,"%s100", input_file);
+        
         printf("%d free inode \n", free_inode);
 
         int fd_fs = open(fs_name, O_WRONLY);
 
         if ((free_inode != -1) && (free != -1)){
-            int fd_fs = open(fs_name, O_WRONLY);
-            lseek(fd_fs, sizeof(superblock_t), SEEK_SET);
-            ssize_t bytes_written = write(fd_fs, object,sizeof(inode_t));
-            printf("inode written at %d \n", free_inode+24);
+            lseek(fd_fs, sizeof(superblock_t)+free_inode, SEEK_SET);
+            ssize_t bytes_written = write(fd_fs, object, sizeof(inode_t));
 
             int nb_db = source_size % DATABLOCK_SIZE;
-            lseek(fd_fs, free+ DB_COUNT * sizeof(inode_t) + sizeof(superblock_t) + DB_COUNT * DATABLOCK_SIZE, SEEK_SET);
+            lseek(fd_fs, free + DB_COUNT * sizeof(inode_t) + sizeof(superblock_t) + DB_COUNT * DATABLOCK_SIZE, SEEK_SET);
             bytes_written = write(fd_fs, buf, source_size+1);
             printf("%ld bytes written to %s at %d\n", bytes_written, fs_name, free);
+            
             close(fd);
         }
     } else {

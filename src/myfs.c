@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <fcntl.h>
 #include "fs.h"
 
 
@@ -45,8 +46,6 @@ int main(int argc, char* argv[]){
 
     // --------------------------- SUPERBLOCK ------------------------ //
     inode_t inode_table[10000];
-    int free_inode_table[10000];
-    int free_db_table[1500];
     char datablocks[DB_COUNT * DATABLOCK_SIZE];
 
     myfs_init(fs_name, 10);
@@ -66,8 +65,17 @@ int main(int argc, char* argv[]){
 
         if (stat(src_file, &src_file_stat) == 0){
             myfs_write(src_file, dst_path, inode_table, datablocks, fs_name);
-            myfs_load(fs_name, superblock, inode_table, datablocks);
-            inode_to_str(inode_table[1]);
+
+            int fd = open(fs_name, O_RDONLY);
+            char* buf = malloc(sizeof(inode_t));
+            lseek(fd, 24, SEEK_SET);
+            
+            read(fd, buf, sizeof(inode_t));
+            printf("%s \n", buf);
+
+            close(fd);
+
+            
         } else {
             // File can't be located
             printf("Error!!! \n");
