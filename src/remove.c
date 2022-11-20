@@ -2,9 +2,11 @@
 #include <string.h>
 
 int remove_file(const char *file_or_directory_path){
+
+
     //retrieving inode_t from file_or_directory_path to empty it
     inode_t r_inode = get_inode(file_or_directory_path,superblock);
-    //empyting datablocks
+    //resetting datablocks data
     r_inode.db_count = 0;
     r_inode.db_size = 0;
 
