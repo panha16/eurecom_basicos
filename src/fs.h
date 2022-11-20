@@ -6,6 +6,7 @@
 #define SUPERBLOCK_SIZE 32
 #define INODE_COUNT 10000 /*! Number of inodes in the FS */
 #define DB_COUNT 1500
+#define CHARCNT 6144000
 
 typedef struct{
     char filename[32];
@@ -35,3 +36,5 @@ inode_t get_inode(char* file_or_directory_path, inode_t* inode_table);
 int get_free_inode(int* inode_table);
 bool is_inode_free(int inode_nb, int* inode_table);
 int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multiple, int stat, inode_t* table);
+int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name);
+int get_free_db(char* datablocks);

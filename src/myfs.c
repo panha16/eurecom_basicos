@@ -47,23 +47,27 @@ int main(int argc, char* argv[]){
     inode_t inode_table[10000];
     int free_inode_table[10000];
     int free_db_table[1500];
-    
+    char datablocks[DB_COUNT * DATABLOCK_SIZE];
+
+    myfs_init(fs_name, 10);
+    myfs_load(fs_name, superblock, inode_table, datablocks);
+
     superblock.inode_count = 10000;
     superblock.db_count = 1500;
     superblock.inode_table_pt = inode_table;
-    superblock.free_inode_pt = (int *) &free_inode_table;
-    superblock.free_db_pt = (char *) &free_db_table;
+    // superblock.free_db_pt = get_free_db();
 
     // ------------------------ WRITE --------------------------- //
 
     if ((strcmp(argv[2], commands[1]) == 0) && (argc > 4)){
-        printf("write command recognized \n");
         printf("filesystem: %s, source file: %s, dest file: %s \n", fs_name, argv[3], argv[4]);
         char* src_file = argv[3];
         char* dst_path = argv[4];
 
         if (stat(src_file, &src_file_stat) == 0){
-            
+            myfs_write(src_file, dst_path, inode_table, datablocks, fs_name);
+            myfs_load(fs_name, superblock, inode_table, datablocks);
+            inode_to_str(inode_table[1]);
         } else {
             // File can't be located
             printf("Error!!! \n");
@@ -103,7 +107,7 @@ int main(int argc, char* argv[]){
         if (stat(src_file, &src_file_stat) == 0){
             printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
             myfs_size(fs_name, src_file, rflag, '\0', 0, inode_table);
-            myfs_load(fs_name, superblock, inode_table);
+
         } else {
             // File can't be located
             printf("Error!!! \n");

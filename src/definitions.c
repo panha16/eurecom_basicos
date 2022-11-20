@@ -16,7 +16,6 @@ inode_t null_inode;
 inode_t get_inode(char* filename, inode_t* inode_table){
     for (int i = 0; i < INODE_COUNT; i++){
         if (strcmp(inode_table[i].filename ,filename) == 0){
-            printf("%d \n", i);
             printf("%s found \n", inode_table[i].filename);
             return inode_table[i];
         }
@@ -29,9 +28,10 @@ inode_t get_inode(char* filename, inode_t* inode_table){
 // is db free - gui
 // return index of free inode
 // return index of free db - gui
-int get_free_db(int* db_table){
-    for (int i = 0; i < DB_COUNT; i++)
-        if (db_table[i] == 0) return i;
+int get_free_db(char* datablocks){
+    for (int i = 0; i < DB_COUNT; i = i + 4096){
+        if (datablocks[i] == '\0') return i;
+    }
     return -1;
 }
 // does the file exist
@@ -51,6 +51,10 @@ int get_free_inode(int* inode_table){
     returns -1 otherwise.
 */
 
+void inode_to_str(inode_t* inode){
+    printf("filename %s \t inodetype %c \t\n", inode->filename, inode->inode_number);
+}
+
 int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t* inode_table){
     inode_table[inode_number] = inode;
     free_inode_table[inode_number] = 1;
@@ -58,14 +62,16 @@ int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t
 }
 /*  Not finished */
 
-int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table){
+int myfs_load(char* fsname, superblock_t superblock, char* inode_table, char* datablocks){
     int fd = open(fsname, O_RDONLY);
-    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096; // code written for test purposes
-    char* buf = malloc(fs_size+1);
+    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT*DATABLOCK_SIZE; // code written for test purposes
+    char* buf = malloc(fs_size);
     ssize_t bytes_read = read(fd, buf, fs_size);
     printf("Bytes read: %ld \n", bytes_read);
-    printf("Value %s \n", buf); // we read whats written in fsname
-    // memcpy(inode_table,b+24,10000* sizeof(inode_t));
+
+    memcpy(inode_table, buf + sizeof(superblock_t), INODE_COUNT * sizeof(inode_t));
+    memcpy(datablocks, buf + INODE_COUNT * sizeof(inode_t), DB_COUNT * DATABLOCK_SIZE);
+
     free(buf);
     return 0;
 }
@@ -73,9 +79,8 @@ int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table){
 int myfs_init(char* fs_name, int size){
     int fd = open(fs_name, O_WRONLY | O_CREAT, 0666);
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
-    char* buf = malloc(fs_size+1);
-    write(fd,"1500", sizeof(int)); // we write the datablock count (we will read it in myfs_load)
-    ssize_t bytes_written = write(fd, buf, fs_size);
+    void* buf = malloc(fs_size+1);
+    ssize_t bytes_written = write(fd, buf, fs_size+1);
     printf("Bytes written: %ld \n", bytes_written);
     free(buf);
     if (close(fd) == 0) printf("filesystem %s fd closed sucessfully \n", fs_name);
