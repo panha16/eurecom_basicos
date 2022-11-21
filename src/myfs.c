@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <fcntl.h>
 #include "fs.h"
 
 
@@ -45,25 +46,35 @@ int main(int argc, char* argv[]){
 
     // --------------------------- SUPERBLOCK ------------------------ //
     inode_t inode_table[10000];
-    int free_inode_table[10000];
-    char free_db_table[1500];
-    
+    char datablocks[DB_COUNT * DATABLOCK_SIZE];
+
+    myfs_init(fs_name, 10);
+    myfs_load(fs_name, superblock, inode_table, datablocks);
+
     superblock.inode_count = 10000;
     superblock.db_count = 1500;
-    superblock.inode_table_pt = (inode_t *) &inode_table;
-    superblock.free_inode_pt = (int *) &free_inode_table;
-    superblock.free_db_pt = (char *) &free_db_table;
-    printf("%p \n", (void*) &inode_table);
+    superblock.inode_table_pt = inode_table;
+    // superblock.free_db_pt = get_free_db();
 
     // ------------------------ WRITE --------------------------- //
 
     if ((strcmp(argv[2], commands[1]) == 0) && (argc > 4)){
-        printf("write command recognized \n");
         printf("filesystem: %s, source file: %s, dest file: %s \n", fs_name, argv[3], argv[4]);
         char* src_file = argv[3];
         char* dst_path = argv[4];
 
         if (stat(src_file, &src_file_stat) == 0){
+            myfs_write(src_file, dst_path, inode_table, datablocks, fs_name);
+
+            int fd = open(fs_name, O_RDONLY);
+            char* buf = malloc(sizeof(inode_t));
+            lseek(fd, 24, SEEK_SET);
+            
+            read(fd, buf, sizeof(inode_t));
+            printf("%s \n", buf);
+
+            close(fd);
+
             
         } else {
             // File can't be located
@@ -103,16 +114,8 @@ int main(int argc, char* argv[]){
         }
         if (stat(src_file, &src_file_stat) == 0){
             printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
-            
-            inode_t test_inode = {
-                .filename = "/",
-                .inode_number = 77
-            };
-            printf("%p \n",superblock.inode_table_pt);
-            memcpy(superblock.inode_table_pt, &test_inode, 2);
+            myfs_size(fs_name, src_file, rflag, '\0', 0, inode_table);
 
-            inode_t result = get_inode(src_file, superblock);
-            printf("%d - %s \n", result.inode_number, result.filename);
         } else {
             // File can't be located
             printf("Error!!! \n");
@@ -124,8 +127,8 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
         if (argv[4]!=0){        //user wants to remove a file
-            if (remove_file(argv[4]) == 0) printf("succesfully removed file %s\n", argv[4]);
-            else printf("error removing the file\n");
+            // remove_file(argv[4]);
+            // printf("succesfully removed file %s\n", argv[4]);
         }   
         else {      //user wants to remove a directory
             // if (ls(argv[3],0,0) == 0){      //directory is empty
