@@ -36,10 +36,16 @@ int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, c
         FILE* fp = fopen(fs_name, "wb");
 
         if ((free_inode != -1) && (free != -1)){
-            fseek(fp, sizeof(superblock_t)+free_inode, SEEK_SET);
+
+            inode_t inode = {
+                .filename= "Salut",
+                .inode_number = 106
+            };
+            fseek(fp, sizeof(superblock_t), SEEK_SET);
+            ssize_t bytes_written = fwrite(&inode, sizeof(inode_t), 1, fp);
 
             fseek(fp, INODE_COUNT * sizeof(inode_t) + sizeof(superblock_t), SEEK_SET);
-            ssize_t bytes_written = fwrite(buf, sizeof(buf), 1, fp);
+            bytes_written = fwrite(buf, sizeof(buf), 1, fp);
             printf("myfs_write: %lld elements written \n");
         }
         fclose(fp);

@@ -64,20 +64,15 @@ int main(int argc, char* argv[]){
 
         if (stat(src_file, &src_file_stat) == 0){
 
-            // int fd_fs = open(fs_name, O_WRONLY);
-            // FILE* fp = fdopen(fd_fs, "wb");
 
-        // inode_t inode = {
-        //     .filename= "Salut",
-        //     .inode_number = 106
-        // };
-            // lseek(fd_fs, sizeof(superblock_t), SEEK_SET);
-            // ssize_t bytes_written = fwrite(&inode, sizeof(inode_t), 1, fp);
-            // close(fd_fs);
 
             myfs_write(src_file, dst_path, inode_table, datablocks, fs_name);
+            
             myfs_load(fs_name, superblock, inode_table, datablocks);
-            for (int i =0; i<50; i++) printf("%c \n", datablocks[i]);
+
+            for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
+            printf("%s \n", inode_table[0].filename);
+            printf("%d \n", inode_table[0].inode_number);
 
 
             

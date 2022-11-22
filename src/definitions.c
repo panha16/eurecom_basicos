@@ -69,6 +69,9 @@ int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char*
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT*DATABLOCK_SIZE; // code written for test purposes
     char *buf = malloc(fs_size); 
 
+    fseek(infile, sizeof(superblock_t), SEEK_SET);
+    fread(inode_table, sizeof(inode_t), INODE_COUNT, infile);
+
     fseek(infile, sizeof(superblock_t) + INODE_COUNT * sizeof(inode_t), SEEK_SET);
     fread(datablocks, sizeof(char), DB_COUNT * DATABLOCK_SIZE, infile);
 
