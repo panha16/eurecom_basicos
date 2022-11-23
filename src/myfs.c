@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <stdint.h>
@@ -64,21 +65,19 @@ int main(int argc, char* argv[]){
 
         if (stat(src_file, &src_file_stat) == 0){
 
-
-
             myfs_write(src_file, dst_path, inode_table, datablocks, fs_name);
             
+            load_inodes(fs_name, inode_table);
             myfs_load(fs_name, superblock, inode_table, datablocks);
-
             for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
             printf("%s \n", inode_table[0].filename);
             printf("%d \n", inode_table[0].inode_number);
-
-
+            printf("%s \n", inode_table[1].filename);
+            printf("%d \n", inode_table[1].inode_number);
             
         } else {
-            // File can't be located
-            printf("Error!!! \n");
+            fprintf(stderr, "Error: Could not open file %s (%s) \n", src_file, strerror(errno));
+            printf("usage: ./myfs <fs> write <src-file> <destination-path> \n");
         }
     }
 

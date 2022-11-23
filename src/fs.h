@@ -16,7 +16,6 @@ typedef struct{
     struct timespec timestamp_access;
     struct timespec timestamp_modify;
     struct timespec timestamp_metadata;
-    int db_size;
     int db_count;
     int db_pt;   // datablock pointer
 } inode_t;
@@ -33,7 +32,7 @@ typedef struct{
 void remove1(const char *file_or_directory_path);
 int ls(const char *dir,int op_a,int op_l);
 inode_t get_inode(char* file_or_directory_path, inode_t* inode_table);
-int get_free_inode(int* inode_table);
+int get_free_inode(inode_t* inode_table);
 bool is_inode_free(int inode_nb, int* inode_table);
 int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multiple, int stat, inode_t* table);
 int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name);

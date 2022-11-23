@@ -11,7 +11,7 @@
 #include <errno.h>
 #include "fs.h"
 
-inode_t null_inode;
+
 // get inode from file name 
 inode_t get_inode(char* filename, inode_t* inode_table){
     for (int i = 0; i < INODE_COUNT; i++){
@@ -20,6 +20,9 @@ inode_t get_inode(char* filename, inode_t* inode_table){
             return inode_table[i];
         }
     }
+    inode_t null_inode = {
+        .inode_number = -1
+    };
     fprintf(stderr, "inode for %s not found \n", filename);
     return null_inode;
 }
@@ -42,9 +45,9 @@ bool is_inode_free(int inode_nb, int* inode_table){
 /* Function to check if inode_nb is free in inode_table
     returns true or false.
 */
-int get_free_inode(int* inode_table){
-    for (int i = 0; i < INODE_COUNT; i++)
-        if (inode_table[i] == 0) return i;
+int get_free_inode(inode_t* inode_table){
+    for (int i = 1; i < INODE_COUNT; i++)
+        if (inode_table[i].inode_number == 0) return i;
     return -1;
 }
 /* This function returns the index of the next available inode in the inode_table
@@ -67,7 +70,6 @@ int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char*
     FILE* infile = fopen (fsname, "rb");
 
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT*DATABLOCK_SIZE; // code written for test purposes
-    char *buf = malloc(fs_size); 
 
     fseek(infile, sizeof(superblock_t), SEEK_SET);
     fread(inode_table, sizeof(inode_t), INODE_COUNT, infile);
@@ -75,16 +77,17 @@ int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char*
     fseek(infile, sizeof(superblock_t) + INODE_COUNT * sizeof(inode_t), SEEK_SET);
     fread(datablocks, sizeof(char), DB_COUNT * DATABLOCK_SIZE, infile);
 
-    free(buf);
     fclose(infile);
     return 0;
 }
 
 int load_inodes(char* fsname, inode_t* inode_table){
-    FILE* fp = fopen(fsname, "rb");
-    ssize_t bytes_read = fread(inode_table, sizeof(inode_t) , INODE_COUNT, fp);
+    FILE* infile = fopen (fsname, "rb");
+
+    fseek(infile, sizeof(superblock_t), SEEK_SET);
+    ssize_t bytes_read = fread(inode_table, sizeof(inode_t), INODE_COUNT, infile);
     printf("Inodes loaded: %ld \n", bytes_read);
-    fclose(fp);
+    fclose(infile);
     return 0;
 }
 
