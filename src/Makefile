@@ -7,6 +7,6 @@ TARGETS = myfs
 all: $(TARGETS)
 # All binaries will be stored under src/bin/
 myfs: myfs.c
-	$(CC) $(CFLAGS) -o bin/$@ $@.c
+	$(CC) $(CFLAGS) -o bin/$@ size.c write.c definitions.c $@.c
 clean:
-	rm -f $(TARGETS)
+	rm -f bin/$(TARGETS)
