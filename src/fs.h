@@ -13,9 +13,7 @@ typedef struct{
     int inode_number;
     char inode_type; // Directory, file
     char inode_rights;
-    struct timespec timestamp_access;
-    struct timespec timestamp_modify;
-    struct timespec timestamp_metadata;
+
     int db_size;
     int db_count;
     int db_pt;    // datablock pointer
@@ -28,13 +26,6 @@ typedef struct{
     int free_db_pt;
 } superblock_t;
 
-typedef struct{
-    int db_count;
-    int inode_count;
-    inode_t* inode_table_pt;
-    int free_inode_pt;
-    int free_db_pt;
-} superblock_t;
 
 // char read(const char *file_path);
 void remove1(const char *file_or_directory_path);
