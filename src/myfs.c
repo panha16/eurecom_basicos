@@ -54,7 +54,6 @@ int main(int argc, char* argv[]){
     superblock.inode_count = 10000;
     superblock.db_count = 1500;
     superblock.inode_table_pt = inode_table;
-    // superblock.free_db_pt = get_free_db();
 
     // ------------------------ WRITE --------------------------- //
 
@@ -64,16 +63,17 @@ int main(int argc, char* argv[]){
         char* dst_path = argv[4];
 
         if (stat(src_file, &src_file_stat) == 0){
+
+
+
             myfs_write(src_file, dst_path, inode_table, datablocks, fs_name);
-
-            int fd = open(fs_name, O_RDONLY);
-            char* buf = malloc(sizeof(inode_t));
-            lseek(fd, 24, SEEK_SET);
             
-            read(fd, buf, sizeof(inode_t));
-            printf("%s \n", buf);
+            myfs_load(fs_name, superblock, inode_table, datablocks);
 
-            close(fd);
+            for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
+            printf("%s \n", inode_table[0].filename);
+            printf("%d \n", inode_table[0].inode_number);
+
 
             
         } else {
