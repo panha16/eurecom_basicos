@@ -20,6 +20,13 @@ typedef struct{
     int db_count;
     int db_pt;    // datablock pointer
 } inode_t;
+typedef struct{
+    int db_count;
+    int inode_count;
+    inode_t* inode_table_pt;
+    int free_inode_pt;
+    int free_db_pt;
+} superblock_t;
 
 typedef struct{
     int db_count;
@@ -29,9 +36,13 @@ typedef struct{
     int free_db_pt;
 } superblock_t;
 
-int read(const char *file_path);
-int remove_file(const char *file_or_directory_path);
+// char read(const char *file_path);
+void remove1(const char *file_or_directory_path);
 int ls(const char *dir,int op_a,int op_l);
-inode_t get_inode(char* file_or_directory_path, superblock_t superblock);
+inode_t get_inode(char* file_or_directory_path, inode_t* inode_table);
 int get_free_inode(int* inode_table);
 bool is_inode_free(int inode_nb, int* inode_table);
+int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multiple, int stat, inode_t* table);
+int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name);
+int get_free_db(char* datablocks);
+int load_inodes(char* fsname, inode_t* inode_table);

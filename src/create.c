@@ -1,62 +1,82 @@
-#include<stdio.h>
-#include<string.h> 
-#include<stdlib.h>  
-#include<fcntl.h>   
-#include<sys/stat.h>    
-#include<unistd.h>  
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-int main(int argc,const char **argv)
-{
-    //variable declaration
-    int iFd = 0;
-    char *chDirName = NULL;
-    char *chFileName = NULL;
-    char *chFullPath = NULL;
-    struct stat sfileInfo;
+#define DATABLOCK_SIZE 4096
+#define SUPERBLOCK_SIZE 32
 
-    //Argument Validation
-    if(argc != 3)
-    {
-        printf("[ERROR] Insufficient Arguments\n");
-        return(-1);
+struct superblock {
+    int db_count;
+    int inode_count;
+    char* inode_table_pt;
+    char* free_inode_pt;
+    char* free_db_pt;
+};
+
+struct inode {
+    int inode_number;
+    int inode_size;
+    char name[8];
+    char inode_type;
+    char inode_rights;
+    struct timespec timestamp_access;
+    struct timespec timestamp_modify;
+    struct timespec timestamp_metadata;
+    int db_size;
+    int db_count;
+    char* db_pt; 
+};
+
+struct data_block{
+    int next_block_num;
+    char data[512];
+};
+
+struct superblock sb;
+struct inode *inodes;
+struct data_block *dbs;
+
+
+int create(int size, char* fs_name){
+    sb.inode_count = 10;
+    sb.db_count = 100;
+
+    // init inodes
+    int i;
+    inodes = malloc(sizeof(struct inode) * sb.inode_count);
+    for (i=0; i< sb.inode_count; i++){
+        inodes[i].inode_size = -1;
+        strcpy(inodes[i].name, "emptyfi");
     }
 
-    //argument processing
-    chDirName = (char *)malloc(sizeof(char));
-    chFileName = (char *)malloc(sizeof(char));
-    chFullPath = (char *)malloc(sizeof(char));
-    chDirName = strcpy(chDirName,argv[1]);
-    chFileName = strcpy(chFileName,argv[2]);
+    // init dbs
+    dbs = malloc(sizeof(struct data_block) * sb.db_count);
+    for (i=0; i< sb.db_count; i++){
+        dbs[i].next_block_num = -1;
+    }
+    
+    FILE* file;
+    file = fopen(fs_name,"w+");
 
-    //create full path of file
-    sprintf(chFullPath,"%s/%s",chDirName,chFileName);
+    // superblock
+    fwrite(&sb, sizeof(struct superblock), 1, file);
 
-    //check directory exists or not
-    if(stat(chDirName,&sfileInfo) == -1)
-    {
-        mkdir(chDirName);
-        printf("[INFO] Directory Created: %s\n",chDirName);
+    //inodes
+    for (i=0; i< sb.inode_count; i++){
+        fwrite (&(inodes[i]), sizeof(struct inode), 1, file);
     }
 
-    //create file inside given directory
-    iFd = creat(chFullPath,0644);
-
-    if(iFd == -1)
-    {
-        printf("[ERROR] Unable to create file: %s\n",chFullPath);
-        free(chDirName);
-        free(chFileName);
-        free(chFullPath);
-        return(-1);
+    //data_blocks
+    for (i=0; i<sb.db_count; i++){
+        fwrite (&(dbs[i]), sizeof(struct data_block), 1, file);
     }
 
-    printf("[INFO] File Created Successfully : %s\n",chFullPath);
+    fclose(file);
+    return 0;
+}
 
-    //close resources
-    close(iFd);
-    free(chDirName);
-    free(chFileName);
-    free(chFullPath);
 
-    return(0);
+int main(){
+    create(10, "myfs");
+    return 0;
 }
