@@ -80,4 +80,57 @@ The size function prints the total size of the directory specified by the path_t
 If the users specifies -r, *size* will print the total size of the directory and also the size of all sub-directories.
 If the user specifies -b,-k,-m or -g, the size will be provied in bytes, kilobytes, megabytes, or gigabytes respectively.
 If the user specfies -stat, *size* will also print the size of the partition table (superblock + inodes) and the files in regards to the total size of the filesystem.
-### Subfunctions
+
+
+Subfunctions
+================
+
+To facilitate the implementation of the forementioned functions and of the filesystem in general, we thought useful to create subfunctions.
+
+### get_inode
+```
+inode_t get_inode(char* filename, inode_t* inode_table)
+```
+*get_inode* finds the inode from the filename
+
+### get_free_db
+```
+int get_free_db(char* datablocks)
+```
+*
+### is_inode_free
+```
+bool is_inode_free(int inode_nb, int* inode_table)
+```
+*is_inode_free* checks if 
+### get_free_inode
+```
+int get_free_inode(int* inode_table)
+```
+
+### inode_to_str
+```
+void inode_to_str(inode_t* inode)
+```
+
+### update_inode
+```
+int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t* inode_table)
+```
+
+### myfs_load
+```
+int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks)
+```
+
+### load_inodes
+```
+int load_inodes(char* fsname, inode_t* inode_table)
+```
+
+### myfs_init
+```
+int myfs_init(char* fs_name, int size)
+```
+
+
