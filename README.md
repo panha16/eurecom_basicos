@@ -10,6 +10,11 @@ make
 ./bin/myfs
 ```
 
+## Example for write
+```
+myfs /tmp/FS write ./mylovelyfile /internaldirectory1/foo
+```
+
 ## Structure 
 | Superblock                                                                                       	| inodes 	| data blocks 	|
 |--------------------------------------------------------------------------------------------------	|--------	|-------------	|
