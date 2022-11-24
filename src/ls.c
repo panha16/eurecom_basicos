@@ -36,10 +36,10 @@ void ls(const char *dir,int op_a,int op_l)
 	}
 	if(!op_l)
 	printf("\n");
-	return 0;
+	// return 0; la signature de la fonction est: void ls()... elle ne peut pas retourner un entier
 }
 
-int main(int argc, const char *argv[])
+int not_main(int argc, const char *argv[]) // on ne peut avoir qu'un seul main et ce sera celui de myfs.c
 {
 	if (argc == 1)
 	{
@@ -65,5 +65,5 @@ int main(int argc, const char *argv[])
 			ls(".",op_a,op_l);
 		}
 	}
-	return 0;
+	// return 0; la signature de la fonction est: void ls()... elle ne peut pas retourner un entier
 }

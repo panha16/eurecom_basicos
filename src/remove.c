@@ -1,11 +1,12 @@
-#include "fs.h"
 #include <string.h>
+#include <stdbool.h>
+#include "fs.h"
 
-int remove_file(const char *file_or_directory_path){
+int remove_file(char *file_or_directory_path, inode_t* inode_table, char* datablocks){
 
 
     //retrieving inode_t from file_or_directory_path to empty it
-    inode_t r_inode = get_inode(file_or_directory_path,superblock);
+    inode_t r_inode = get_inode(file_or_directory_path, inode_table);
     
     //emptying datablocks linked to the file
     for (int i = r_inode.db_pt; i < 4096*r_inode.db_count ;i++){
@@ -14,13 +15,13 @@ int remove_file(const char *file_or_directory_path){
     
     //resetting datablocks data
     r_inode.db_count = 0;
-    r_inode.d_size = 0;
+    r_inode.db_size = 0;
     
     //updating tables linked to inode
     inode_t null_inode;
     inode_table[r_inode.inode_number] = null_inode;
-    free_inode_table[r_inode.inode_number] = 0;
-    free_db_table[r_inode.db_pt] = 0;
+    // free_inode_table[r_inode.inode_number] = 0;
+    // free_db_table[r_inode.db_pt] = 0;
 
     //retrieving filename from file_or_directory_path to delete the file
     char *slash_filename = strrchr(file_or_directory_path, '/');
