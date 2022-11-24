@@ -28,6 +28,13 @@ typedef struct{
     int free_db_pt;
 } superblock_t;
 
+typedef struct{
+    int db_count;
+    int inode_count;
+    inode_t* inode_table_pt;
+    int free_inode_pt;
+    int free_db_pt;
+} superblock_t;
 
 // char read(const char *file_path);
 void remove1(const char *file_or_directory_path);
