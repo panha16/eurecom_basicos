@@ -63,42 +63,39 @@ int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t
 /*  Not finished */
 
 int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks){
-    int fd = open(fsname, O_RDONLY);
-    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT*DATABLOCK_SIZE; // code written for test purposes
-    char* buf = malloc(fs_size);
-    ssize_t bytes_read = read(fd, buf, fs_size);
-    printf("Bytes read: %ld \n", bytes_read);
 
-    memcpy(inode_table, buf + sizeof(superblock_t), INODE_COUNT * sizeof(inode_t));
-    memcpy(datablocks, buf + INODE_COUNT * sizeof(inode_t), DB_COUNT * DATABLOCK_SIZE);
+    FILE* infile = fopen (fsname, "rb");
+
+    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT*DATABLOCK_SIZE; // code written for test purposes
+    char *buf = malloc(fs_size); 
+
+    fseek(infile, sizeof(superblock_t), SEEK_SET);
+    fread(inode_table, sizeof(inode_t), INODE_COUNT, infile);
+
+    fseek(infile, sizeof(superblock_t) + INODE_COUNT * sizeof(inode_t), SEEK_SET);
+    fread(datablocks, sizeof(char), DB_COUNT * DATABLOCK_SIZE, infile);
 
     free(buf);
+    fclose(infile);
     return 0;
 }
 
 int load_inodes(char* fsname, inode_t* inode_table){
-    int fd = open(fsname, O_RDONLY);
-    char* buf = malloc((INODE_COUNT * sizeof(inode_t)) + 1);
-    ssize_t bytes_read = read(fd, buf+ sizeof(superblock_t) , INODE_COUNT * sizeof(inode_t));
-    printf("Bytes read: %ld \n", bytes_read);
-    memcpy(inode_table, buf, INODE_COUNT * sizeof(inode_t));
+    FILE* fp = fopen(fsname, "rb");
+    ssize_t bytes_read = fread(inode_table, sizeof(inode_t) , INODE_COUNT, fp);
+    printf("Inodes loaded: %ld \n", bytes_read);
+    fclose(fp);
     return 0;
 }
 
 int myfs_init(char* fs_name, int size){
-    int fd = open(fs_name, O_WRONLY | O_CREAT, 0666);
+    FILE *fp = fopen(fs_name, "wb+");
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
     void* buf = malloc(fs_size+1);
-    ssize_t bytes_written = write(fd, buf, fs_size+1);
-    printf("Bytes written: %ld \n", bytes_written);
+    ssize_t bytes_written = fwrite(buf, sizeof(buf),1, fp);
+    printf("Init: Bytes written: %ld \n", bytes_written);
     free(buf);
-    if (close(fd) == 0) printf("filesystem %s fd closed sucessfully \n", fs_name);
+    
+    if (fclose(fp) == 0) printf("filesystem %s fd closed sucessfully \n", fs_name);
     return 0;
 }
-
-// get inode from file name - gui
-// is inode free
-// is db free - gui
-// return index of free inode
-// return index of free db - gui
-// does the file exist
