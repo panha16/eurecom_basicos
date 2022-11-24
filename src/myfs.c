@@ -126,8 +126,8 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
         if (argv[4]!=0){        //user wants to remove a file
-            // remove_file(argv[4]);
-            // printf("succesfully removed file %s\n", argv[4]);
+            remove_file(argv[4],inode_table, datablocks);
+            printf("succesfully removed file %s\n", argv[4]);
         }   
         else {      //user wants to remove a directory
             // if (ls(argv[3],0,0) == 0){      //directory is empty
@@ -141,8 +141,8 @@ int main(int argc, char* argv[]){
 
     else if (strcmp(argv[2],commands[2]) == 0){
         printf("read command recognized \n");
-        // if (!read_file(argv[3])) printf("file could not be read\n");
-        // printf("successfully read following file : %d \n",read_file(argv[3]));
+        if (!read_file(fs_name, argv[3], datablocks)) printf("file could not be read\n");
+        printf("successfully read following file : %d \n",read_file(argv[3]));
         
     }
     exit (0);
