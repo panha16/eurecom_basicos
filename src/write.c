@@ -26,6 +26,8 @@ int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, c
         int fd = open(input_file, O_RDONLY);
         ssize_t bytes_read = read(fd, buf, source_size+1);
 
+        // add check for x number of datablocks
+
         int free = get_free_db(dbs);
         int free_inode = get_free_inode(inode_table);
         char* object = malloc(sizeof(inode_t));
