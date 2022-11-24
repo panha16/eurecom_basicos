@@ -18,7 +18,7 @@ typedef struct{
     struct timespec timestamp_metadata;
     int db_size;
     int db_count;
-    int db_pt;   // datablock pointer
+    int db_pt;    // datablock pointer
 } inode_t;
 typedef struct{
     int db_count;
