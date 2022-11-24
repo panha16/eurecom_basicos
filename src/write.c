@@ -30,10 +30,18 @@ int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, c
 
         load_inodes(fs_name, inode_table);
 
-        int free = get_free_db(dbs);
+        int quotient = source_size / DATABLOCK_SIZE;
+        int remainder = source_size % DATABLOCK_SIZE;
+        int size_in_dbs = quotient + ((remainder == 0) ? 0 : 1);
+
+
+        int free = get_free_db(dbs,size_in_dbs);
         int free_inode = get_free_inode(inode_table);
         printf("free inode at %d \n", free_inode);
 
+
+
+ 
         if ((free_inode != -1) && (free != -1)){
             FILE* fp = fopen(fs_name, "wb");
             inode_t inode_fromfs = get_inode(input_file, inode_table);

@@ -13,7 +13,6 @@ typedef struct{
     int inode_number;
     char inode_type; // Directory, file
     char inode_rights;
-
     int db_size;
     int db_count;
     int db_pt;   // datablock pointer
@@ -35,5 +34,5 @@ int get_free_inode(inode_t* inode_table);
 bool is_inode_free(int inode_nb, int* inode_table);
 int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multiple, int stat, inode_t* table);
 int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name);
-int get_free_db(char* datablocks);
+int get_free_db(char* datablocks, int size_in_dbs);
 int load_inodes(char* fsname, inode_t* inode_table);

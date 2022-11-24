@@ -31,11 +31,19 @@ inode_t get_inode(char* filename, inode_t* inode_table){
 // is db free - gui
 // return index of free inode
 // return index of free db - gui
-int get_free_db(char* datablocks){
-    for (int i = 0; i < DB_COUNT; i = i + 4096){
-        if (datablocks[i] == '\0') return i;
+int get_free_db(char* datablocks, int size_in_dbs){
+    int c = 0;
+    int i;
+    for (i = 0; (i < DB_COUNT) && (c != size_in_dbs); i = i + DATABLOCK_SIZE){
+        for (int j = 0; j < size_in_dbs; j++)
+            if (datablocks[i+j] == '\0'){
+                c++;
+            } else {
+                c=0;
+                break;
+            }
     }
-    return -1;
+    return (c == size_in_dbs) ? i : -1;
 }
 // does the file exist
 bool is_inode_free(int inode_nb, int* inode_table){
