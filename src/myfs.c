@@ -70,11 +70,11 @@ int main(int argc, char* argv[]){
             load_inodes(fs_name, inode_table);
             myfs_load(fs_name, superblock, inode_table, datablocks);
             for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
-            printf("%s \n", inode_table[0].filename);
-            printf("%d \n", inode_table[0].inode_number);
-            printf("%s \n", inode_table[1].filename);
-            printf("%d \n", inode_table[1].inode_number);
-            
+            printf("file name %s \n", inode_table[2].filename);
+            printf("inode number %d \n", inode_table[2].inode_number);
+            printf("size in db %d \n", inode_table[2].db_count);
+            printf("dbptr %d \n", inode_table[2].db_pt);
+
         } else {
             fprintf(stderr, "Error: Could not open file %s (%s) \n", src_file, strerror(errno));
             printf("usage: ./myfs <fs> write <src-file> <destination-path> \n");
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[2],commands[2]) == 0){
         printf("read command recognized \n");
         if (!read_file(fs_name, argv[3], datablocks)) printf("file could not be read\n");
-        printf("successfully read following file : %d \n",read_file(argv[3]));
+        printf("successfully read following file : %d \n",read_file(fs_name, argv[3],datablocks));
         
     }
     exit (0);

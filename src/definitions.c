@@ -32,18 +32,15 @@ inode_t get_inode(char* filename, inode_t* inode_table){
 // return index of free inode
 // return index of free db - gui
 int get_free_db(char* datablocks, int size_in_dbs){
-    int c = 0;
-    int i;
+    int c = 0; int i;
     for (i = 0; (i < DB_COUNT) && (c != size_in_dbs); i = i + DATABLOCK_SIZE){
         for (int j = 0; j < size_in_dbs; j++)
-            if (datablocks[i+j] == '\0'){
-                c++;
-            } else {
-                c=0;
-                break;
+            if (datablocks[i+j] == '\0') c++;
+            else {
+                c=0; break;
             }
     }
-    return (c == size_in_dbs) ? i : -1;
+    return (c == size_in_dbs) ? (i-DATABLOCK_SIZE) : -1;
 }
 // does the file exist
 bool is_inode_free(int inode_nb, int* inode_table){
@@ -54,7 +51,7 @@ bool is_inode_free(int inode_nb, int* inode_table){
     returns true or false.
 */
 int get_free_inode(inode_t* inode_table){
-    for (int i = 1; i < INODE_COUNT; i++)
+    for (int i = 2; i < INODE_COUNT; i++)
         if (inode_table[i].inode_number == 0) return i;
     return -1;
 }

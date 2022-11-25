@@ -12,7 +12,6 @@
 #include <fcntl.h>
 #include "fs.h"
 
-
 int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name){
     struct stat src_file_stat;
 
@@ -34,34 +33,30 @@ int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, c
         int remainder = source_size % DATABLOCK_SIZE;
         int size_in_dbs = quotient + ((remainder == 0) ? 0 : 1);
 
-
         int free = get_free_db(dbs,size_in_dbs);
         int free_inode = get_free_inode(inode_table);
-        printf("free inode at %d \n", free_inode);
-
-
-
  
         if ((free_inode != -1) && (free != -1)){
             FILE* fp = fopen(fs_name, "wb");
             inode_t inode_fromfs = get_inode(input_file, inode_table);
-            int nb_db = source_size % DATABLOCK_SIZE;
             // if no inode with the same filename is not found then proceed
             if (inode_fromfs.inode_number == -1){ 
                 inode_t inode = {
-                    .inode_number = free_inode,
+                    .inode_number = (free_inode+1),
                     .inode_type = 'f',
-                    .db_count = nb_db,
+                    .db_size = DATABLOCK_SIZE,
+                    .db_count = size_in_dbs,
                     .db_pt = free
                 };
+
+                printf("free inode: %d | %d %d %d \n", free_inode, inode.inode_number, inode.db_count, inode.db_pt);                
                 strncpy(inode.filename, input_file, 32 * sizeof(char));
 
-                fseek(fp, sizeof(superblock_t), SEEK_SET);
+                fseek(fp, sizeof(superblock_t) + (free_inode * sizeof(inode_t)), SEEK_SET);
                 ssize_t bytes_written = fwrite(&inode, sizeof(inode_t), 1, fp);
 
-                fseek(fp, INODE_COUNT * sizeof(inode_t) + sizeof(superblock_t), SEEK_SET);
+                fseek(fp, INODE_COUNT * sizeof(inode_t) + sizeof(superblock_t)+ free, SEEK_SET);
                 bytes_written = fwrite(buf, sizeof(char), source_size+1, fp);
-                printf("myfs_write: %d elements written \n");
                 fclose(fp);
             }
         }
