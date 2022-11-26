@@ -8,23 +8,23 @@
 Objective
 ===============
 
-The goal of this project is to create a simple filesystem in C and the to implement the following functions to this filesystem : "create","write","read","remove","ls","size".
-The filesystem should support at least 10Mbytes and the size of a file should be at 5MBytes maximum.
+The goal of this project is to create a simple filesystem in C and to implement the following functions to this filesystem : "create", "write" ,"read" ,"remove", "ls", "size".
+The filesystem should support at least 10Mbytes and the size of a file should be at most 5Mbytes.
 To implement this filesystem, we had to define its structure by organizing the superblock,the inodes and the datablocks to then define their behaviour in regards to the functions.
 
 
 Filesystem structure
 ===============
 
-The filesystem is divided into 4 parts : the superblock, the inodes, the datablock and the files. We decided that our filesystem should contain 1500 data blocks and 10000 inodes. Given that a datablock weighs 4096 bytes and an inode 72 bytes, all the datablocks and the inodes amount 6.144Mbytes and 0.72Mbytes respectively. The superblock size is not mentioned here as it is very small compared to the rest.
+The filesystem is divided into 4 parts : the superblock, the inodes, the datablock and the files. We decided that our filesystem should contain 1500 data blocks and 10000 inodes. Given that a datablock weighs 4096 bytes and an inode 72 bytes, all the datablocks and the inodes amount to 6.144Mbytes and 0.72Mbytes respectively. The superblock size is not mentioned here as it is very small compared to the rest.
 
 
 ### Superblock
-The superblock is composed of the number of datablocks and inodes, and pointers to 3 tables : one for all inodes, one for free inodes and one for free datablocks.
+The superblock is composed of the number of datablocks and inodes, and pointers to 3 tables : one to all inodes, one to free inodes and one to free datablocks.
 
 
 ### Inodes
-To each file is dedicated one and only one inode. This inode is composed of the file name,the inode number, the file type,the permissions given, and informations concerning the datablocks linked to this inode such as their size, their amount and the pointer to these datablocks.
+To each file is dedicated one and only one inode. This inode is composed of the file name, the inode number, the file type,the permissions given, the timestamp and informations concerning the datablocks linked to this inode such as their size, their amount and the pointer to these datablocks.
 
 
 ### Datablocks
@@ -87,26 +87,46 @@ Subfunctions
 
 To facilitate the implementation of the forementioned functions and of the filesystem in general, we thought useful to create subfunctions.
 
+### myfs_init
+```
+int myfs_init(char* fs_name, int size)
+```
+This function initializes the filesystem **fs_name** to the size **size** (in Mbytes).
+
+### myfs_load
+```
+int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks)
+```
+This function loads the filesystem previously initialized. It loads the inode table and all datablocks to be ready for use.
+
+### load_inodes
+```
+int load_inodes(char* fsname, inode_t* inode_table)
+```
+
 ### get_inode
 ```
 inode_t get_inode(char* filename, inode_t* inode_table)
 ```
-*get_inode* finds the inode from the filename
+This function finds the inode from the filename and returns it.
 
 ### get_free_db
 ```
 int get_free_db(char* datablocks)
 ```
-*
+This function returns the index of the first free datablock among all datablocks.
+
 ### is_inode_free
 ```
 bool is_inode_free(int inode_nb, int* inode_table)
 ```
-*is_inode_free* checks if 
+This functions checks if an inode is free or not.
+
 ### get_free_inode
 ```
 int get_free_inode(int* inode_table)
 ```
+This function returns the index of the first free inode among all inodes.
 
 ### inode_to_str
 ```
@@ -118,19 +138,6 @@ void inode_to_str(inode_t* inode)
 int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t* inode_table)
 ```
 
-### myfs_load
-```
-int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks)
-```
 
-### load_inodes
-```
-int load_inodes(char* fsname, inode_t* inode_table)
-```
-
-### myfs_init
-```
-int myfs_init(char* fs_name, int size)
-```
 
 
