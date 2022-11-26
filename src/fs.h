@@ -7,17 +7,23 @@
 #define INODE_COUNT 10000 /*! Number of inodes in the FS */
 #define DB_COUNT 1500
 #define CHARCNT 6144000
+#include <sys/time.h>
+#include <time.h>
 
 typedef struct{
     char filename[32];
     int inode_number;
     char inode_type; // Directory, file
     char inode_rights;
+    struct timespec timestamp_access;
+    struct timespec timestamp_modify;
+    struct timespec timestamp_metadata;
     int db_size;
     int db_count;
     int db_pt;   // datablock pointer
 } inode_t;
 typedef struct{
+    int size;
     int db_count;
     int inode_count;
     inode_t* inode_table_pt;

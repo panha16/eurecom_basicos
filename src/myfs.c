@@ -11,6 +11,8 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/time.h>
+
 #include <stdint.h>
 #include <stdbool.h>
 #include <fcntl.h>
@@ -74,6 +76,18 @@ int main(int argc, char* argv[]){
             printf("inode number %d \n", inode_table[2].inode_number);
             printf("size in db %d \n", inode_table[2].db_count);
             printf("dbptr %d \n", inode_table[2].db_pt);
+
+
+            // William, tu peux utiliser ça pour print les time des fichiers
+            // struct tm *tmbuf;
+            // char str[64];
+
+            // tmbuf = gmtime(&inode_table[2].timestamp_access);
+            // if (tmbuf == NULL)
+            //     err(1, "gmtime");
+            // if (strftime(str, sizeof(str), "%a %b %e %T %Y %Z", tmbuf) == 0)
+            //     err(1, "strftime");
+            // printf("%s \n", str);
 
         } else {
             fprintf(stderr, "Error: Could not open file %s (%s) \n", src_file, strerror(errno));
