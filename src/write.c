@@ -14,8 +14,7 @@
 #include "fs.h"
 
 int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name){
-    struct stat src_file_stat; int quotient; int remainder; int size_in_dbs;
-    int free; int free_inode;
+    struct stat src_file_stat; int quotient, remainder, size_in_dbs, free, free_inode;
 
     if (stat(input_file, &src_file_stat) == 0){
         int source_size =  (intmax_t) src_file_stat.st_size;
@@ -36,11 +35,8 @@ LABEL1:
         size_in_dbs = quotient + ((remainder == 0) ? 0 : 1);
 
         free = get_free_db(dbs,size_in_dbs);
-        printf("got free db at %d with size %d \n", free, size_in_dbs);
         free_inode = get_free_inode(inode_table);
-        printf("got free inode at %d \n", free_inode);
 
- 
         if ((free_inode != -1) && (free != -1)){
             FILE* fp = fopen(fs_name, "rb+");
             // if no inode with the same filename is not found then proceed
@@ -87,7 +83,7 @@ DECISION1:
                 printf("Warning: No available inode for %s \n", input_file);
 DECISION2:
                 printf("Would you like to overwrite the file system? (y/n) \n");
-                char c = fgetc(0);
+                scanf("%c", &c);
                 switch (c) {
                     case 'y': printf("Ok, deleting an inode...\n ");goto LABEL1;break;
                     case 'n': printf("Ok, aborting write instruction... \n"); exit(0);

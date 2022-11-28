@@ -34,18 +34,13 @@ inode_t get_inode(char* filename, inode_t* inode_table){
 int get_free_db(char* datablocks, int size_in_dbs){
     int c = 0; int i;
     for (i = 0; (i < (DB_COUNT * DATABLOCK_SIZE)) && (c != size_in_dbs); i = i + DATABLOCK_SIZE){
-        printf(" -value at %d \n", i);
         for (int j = 0; j < size_in_dbs; j++){
-            if (datablocks[i+(j*DATABLOCK_SIZE)] == '\0') {
-                printf(" checking db at %d \n", i+(j*DATABLOCK_SIZE));
-                c++;
-            }  
+            if (datablocks[i+(j*DATABLOCK_SIZE)] == '\0') c++;
             else {
                 c=0; break;
             }
         }
     }
-    printf(" c %d, size %d, i %d\n", c, size_in_dbs, (i-DATABLOCK_SIZE));
     return (c == size_in_dbs) ? (i-DATABLOCK_SIZE) : -1;
 }
 // does the file exist

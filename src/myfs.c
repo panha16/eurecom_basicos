@@ -21,7 +21,7 @@
 
 int main(int argc, char* argv[]){
 
-    int rflag = 0; int kflag = 0; int mflag = 0; int gflag = 0;
+    int rflag = 0, kflag = 0, mflag = 0, gflag = 0;
     static int stat_flag = 0;
     superblock_t superblock;
     
@@ -149,7 +149,6 @@ int main(int argc, char* argv[]){
             }
             if ((strcmp(argv[i], "-kb") == 0) || (strcmp(argv[i], "-kb") == 0)
                 || (strcmp(argv[i], "-k") == 0) || (strcmp(argv[i], "-K") == 0)){
-                printf("size will be in Kbytes \n");
                 kflag = 1;
             }
             if ((strcmp(argv[i], "-gb") == 0) || (strcmp(argv[i], "-GB") == 0)
@@ -157,18 +156,12 @@ int main(int argc, char* argv[]){
                 gflag = 1;  
             }
         }
-        if (stat(src_file, &src_file_stat) == 0){
-            printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
+        
+        if (mflag) myfs_size(fs_name, src_file, rflag, 'M', stat_flag, inode_table, datablocks);
+        else if (kflag) myfs_size(fs_name, src_file, rflag, 'K', stat_flag, inode_table, datablocks);
+        else if (gflag) myfs_size(fs_name, src_file, rflag, 'G', stat_flag, inode_table, datablocks);
+        else myfs_size(fs_name, src_file, rflag, 'B', stat_flag, inode_table, datablocks);
 
-            if (mflag) myfs_size(fs_name, src_file, rflag, 'M', stat_flag, inode_table, datablocks);
-            else if (kflag) myfs_size(fs_name, src_file, rflag, 'K', stat_flag, inode_table, datablocks);
-            else if (gflag) myfs_size(fs_name, src_file, rflag, 'G', stat_flag, inode_table, datablocks);
-            else myfs_size(fs_name, src_file, rflag, 'B', stat_flag, inode_table, datablocks);
-
-        } else {
-            // File can't be located
-            printf("Error!!! \n");
-        }
     }
     // ------------------------ END OF SIZE --------------------------- //
 
