@@ -21,19 +21,12 @@
 
 int main(int argc, char* argv[]){
 
-    int rflag;
-    // int dflag;
-    int bflag;
-    int kflag;
-    int mflag;
-    int gflag;
-    static int stat_flag;
+    int rflag = 0; int kflag = 0; int mflag = 0; int gflag = 0;
+    static int stat_flag = 0;
     superblock_t superblock;
     
     // char *rvalue = NULL;
     // char *dvalue = NULL;
-    char* src_file;
-    char* dst_path;
     char* fs_name = argv[1];
 
     if (argc < 4) {
@@ -51,7 +44,12 @@ int main(int argc, char* argv[]){
     inode_t inode_table[10000];
     char datablocks[DB_COUNT * DATABLOCK_SIZE];
 
-    myfs_init(fs_name, 10);
+    // J'utilise ça pour effectuer mes tests en attendant `create` — Ahmed
+    struct stat fs_file_stat;
+    if (stat(fs_name, &fs_file_stat) != 0){
+        myfs_init(fs_name, 10);
+    }
+
     myfs_load(fs_name, superblock, inode_table, datablocks);
 
     superblock.inode_count = 10000;
@@ -61,21 +59,59 @@ int main(int argc, char* argv[]){
     // ------------------------ WRITE --------------------------- //
 
     if ((strcmp(argv[2], commands[1]) == 0) && (argc > 4)){
-        printf("filesystem: %s, source file: %s, dest file: %s \n", fs_name, argv[3], argv[4]);
         char* src_file = argv[3];
         char* dst_path = argv[4];
 
         if (stat(src_file, &src_file_stat) == 0){
 
-            myfs_write(src_file, dst_path, inode_table, datablocks, fs_name);
+            // for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
+            // printf("file name %s \n", inode_table[2].filename);
+            // printf("inode number %d \n", inode_table[2].inode_number);
+            // printf("size in db %d \n", inode_table[2].db_count);
+            // printf("dbptr %d \n", inode_table[2].db_pt);
+
+            // printf("file name %s \n", inode_table[0].filename);
+            // printf("inode number %d \n", inode_table[0].inode_number);
+            // printf("size in db %d \n", inode_table[0].db_count);
+            // printf("dbptr %d \n", inode_table[0].db_pt);
             
+            // printf("file name %s \n", inode_table[1].filename);
+            // printf("inode number %d \n", inode_table[1].inode_number);
+            // printf("size in db %d \n", inode_table[1].db_count);
+            // printf("dbptr %d \n", inode_table[1].db_pt);
+
+            if (myfs_write(src_file, dst_path, inode_table, datablocks, fs_name) != 0) return 1;
+            
+            // myfs_load(fs_name, superblock, inode_table, datablocks);
             load_inodes(fs_name, inode_table);
-            myfs_load(fs_name, superblock, inode_table, datablocks);
-            for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
+            // for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
             printf("file name %s \n", inode_table[2].filename);
             printf("inode number %d \n", inode_table[2].inode_number);
             printf("size in db %d \n", inode_table[2].db_count);
             printf("dbptr %d \n", inode_table[2].db_pt);
+
+            printf("file name %s \n", inode_table[0].filename);
+            printf("inode number %d \n", inode_table[0].inode_number);
+            printf("size in db %d \n", inode_table[0].db_count);
+            printf("dbptr %d \n", inode_table[0].db_pt);
+            
+            printf("file name %s \n", inode_table[1].filename);
+            printf("inode number %d \n", inode_table[1].inode_number);
+            printf("size in db %d \n", inode_table[1].db_count);
+            printf("dbptr %d \n", inode_table[1].db_pt);
+
+            printf("file name %s \n", inode_table[3].filename);
+            printf("inode number %d \n", inode_table[3].inode_number);
+            printf("size in db %d \n", inode_table[3].db_count);
+            printf("dbptr %d \n", inode_table[3].db_pt);
+
+            printf("file name %s \n", inode_table[4].filename);
+            printf("inode number %d \n", inode_table[4].inode_number);
+            printf("size in db %d \n", inode_table[4].db_count);
+            printf("dbptr %d \n", inode_table[4].db_pt);
+            
+
+            // for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
 
 
             // William, tu peux utiliser ça pour print les time des fichiers
@@ -99,7 +135,6 @@ int main(int argc, char* argv[]){
 
     // ------------------------ SIZE --------------------------- //
     else if (strcmp(argv[2], commands[4]) == 0){
-        printf("size command recognized, stat flag state: %d \n", stat_flag);
         char* src_file = argv[argc-1]; // according to the project description, path-to-dir comes last
         for (int i = 2; i < argc; i++){
             if (strcmp(argv[i], "-stat") == 0){
@@ -107,9 +142,6 @@ int main(int argc, char* argv[]){
             }
             if (strcmp(argv[i], "-r") == 0){
                 rflag = 1;
-            }
-            if (strcmp(argv[i], "-b") == 0){
-                bflag = 1;
             }
             if ((strcmp(argv[i], "-mb") == 0) || (strcmp(argv[i], "-MB") == 0) 
                 || (strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "-M") == 0)){
@@ -127,7 +159,11 @@ int main(int argc, char* argv[]){
         }
         if (stat(src_file, &src_file_stat) == 0){
             printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
-            myfs_size(fs_name, src_file, rflag, '\0', 0, inode_table);
+
+            if (mflag) myfs_size(fs_name, src_file, rflag, 'M', stat_flag, inode_table, datablocks);
+            else if (kflag) myfs_size(fs_name, src_file, rflag, 'K', stat_flag, inode_table, datablocks);
+            else if (gflag) myfs_size(fs_name, src_file, rflag, 'G', stat_flag, inode_table, datablocks);
+            else myfs_size(fs_name, src_file, rflag, 'B', stat_flag, inode_table, datablocks);
 
         } else {
             // File can't be located

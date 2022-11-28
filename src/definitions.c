@@ -33,13 +33,19 @@ inode_t get_inode(char* filename, inode_t* inode_table){
 // return index of free db - gui
 int get_free_db(char* datablocks, int size_in_dbs){
     int c = 0; int i;
-    for (i = 0; (i < DB_COUNT) && (c != size_in_dbs); i = i + DATABLOCK_SIZE){
-        for (int j = 0; j < size_in_dbs; j++)
-            if (datablocks[i+j] == '\0') c++;
+    for (i = 0; (i < (DB_COUNT * DATABLOCK_SIZE)) && (c != size_in_dbs); i = i + DATABLOCK_SIZE){
+        printf(" -value at %d \n", i);
+        for (int j = 0; j < size_in_dbs; j++){
+            if (datablocks[i+(j*DATABLOCK_SIZE)] == '\0') {
+                printf(" checking db at %d \n", i+(j*DATABLOCK_SIZE));
+                c++;
+            }  
             else {
                 c=0; break;
             }
+        }
     }
+    printf(" c %d, size %d, i %d\n", c, size_in_dbs, (i-DATABLOCK_SIZE));
     return (c == size_in_dbs) ? (i-DATABLOCK_SIZE) : -1;
 }
 // does the file exist
@@ -74,8 +80,6 @@ int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char*
 
     FILE* infile = fopen (fsname, "rb");
 
-    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT*DATABLOCK_SIZE; // code written for test purposes
-
     fseek(infile, sizeof(superblock_t), SEEK_SET);
     fread(inode_table, sizeof(inode_t), INODE_COUNT, infile);
 
@@ -98,9 +102,28 @@ int load_inodes(char* fsname, inode_t* inode_table){
 
 int myfs_init(char* fs_name, int size){
     FILE *fp = fopen(fs_name, "wb+");
-    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * 10000) + 1500*4096;
+    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT * DATABLOCK_SIZE;
     void* buf = malloc(fs_size+1);
     ssize_t bytes_written = fwrite(buf, sizeof(buf),1, fp);
+    inode_t inode_f = {
+        .inode_number = 0,
+        .inode_type = 'f',
+        .db_size = DATABLOCK_SIZE
+    };
+    inode_t inode_s = {
+        .inode_number = 1,
+        .inode_type = 'f',
+        .db_size = DATABLOCK_SIZE
+    };
+
+    strncpy(inode_f.filename, "init", 32 * sizeof(char));
+    strncpy(inode_s.filename, "root", 32 * sizeof(char));
+
+    fseek(fp, sizeof(superblock_t), SEEK_SET);
+    fwrite(&inode_f, sizeof(inode_t), 1, fp);
+    fseek(fp, sizeof(superblock_t)+sizeof(inode_t), SEEK_SET);
+    fwrite(&inode_s, sizeof(inode_t), 1, fp);
+    
     printf("Init: Bytes written: %ld \n", bytes_written);
     free(buf);
     
