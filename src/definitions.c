@@ -100,6 +100,13 @@ int myfs_init(char* fs_name, int size){
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT * DATABLOCK_SIZE;
     void* buf = malloc(fs_size+1);
     ssize_t bytes_written = fwrite(buf, sizeof(buf),1, fp);
+    printf("%ld bytes written \n", sizeof(buf));
+
+    superblock_t sb = {
+        .size = 768000,
+        .db_count = 1500
+    };
+
     inode_t inode_f = {
         .inode_number = 0,
         .inode_type = 'f',
@@ -114,6 +121,8 @@ int myfs_init(char* fs_name, int size){
     strncpy(inode_f.filename, "init", 32 * sizeof(char));
     strncpy(inode_s.filename, "root", 32 * sizeof(char));
 
+    fseek(fp, 0, SEEK_SET);
+    fwrite(&sb, sizeof(superblock_t), 1, fp);
     fseek(fp, sizeof(superblock_t), SEEK_SET);
     fwrite(&inode_f, sizeof(inode_t), 1, fp);
     fseek(fp, sizeof(superblock_t)+sizeof(inode_t), SEEK_SET);

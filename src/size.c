@@ -31,16 +31,16 @@ int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multip
             case 'M': c = c / 1000000; strcpy(disp, "MB"); break;
             case 'K': c = c / 1000; strcpy(disp, "KB"); break;
             case 'G': c = c / 1000000000; strcpy(disp, "GB"); break;
-            default: strcpy(disp, "Bytes"); break;
+            default: strcpy(disp, "B "); break;
         }
         printf("Total size of files in /: %g %s \n", c, disp);
-        return 0;
     } else {
-        // this is a work around to get the right dirname, man -s3 dirname for more info
+        // this is a work around to get the right dirname, `man -s3 dirname` for more info
         char tmp[32];
         strcpy(tmp, path_to_directory);
         strcat(tmp, "/trailing/");
-        char* parent = dirname(tmp); 
+        char* parent = dirname(tmp);
+        printf("%s \n", parent);
         // if (inode.inode_type == 'd'){}
         for (int i = 2; i < INODE_COUNT; i++){
             if (strstr(table[i].filename, parent)){
@@ -53,15 +53,39 @@ int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multip
             case 'M': c = c / 1000000; strcpy(disp, "MB"); break;
             case 'K': c = c / 1000; strcpy(disp, "KB"); break;
             case 'G': c = c / 1000000000; strcpy(disp, "GB"); break;
-            default: strcpy(disp, "Bytes"); break;
+            default: strcpy(disp, "B "); break;
         }
         printf("Total size of files in %s: %g %s \n", parent, c, disp);
-        return 0;
     // else {
     //     fprintf(stderr, "Invalid path. Path must point to directory \n");
     //     printf("usage: ./myfs <fs> <opt -b/-k/-m/-g> <opt -r> <path-to-directory> \n");
     //     return 1;
     //     }
+    }
+
+    if (stat) {
+        FILE* fp = fopen(fs_name, "rb");
+        float data = 0; int res;
+        c = 0;
+
+        for (int i = 0; i < (INODE_COUNT * sizeof(inode_t)); i++){
+            if ((res = fgetc(fp)) != '\0') c++;
+        }
+        fclose(fp);
+
+        for (int i = 0; i < DATABLOCK_SIZE * DB_COUNT; i++){
+            if (dbs[i] != '\0'){
+                data++;
+            }
+        }
+        switch(multiple) {
+            case 'M': c = c / 1000000; data = data / 1000000;strcpy(disp, "MB"); break;
+            case 'K': c = c / 1000; data = data / 1000;strcpy(disp, "KB"); break;
+            case 'G': c = c / 1000000000; data = data / 1000000000; strcpy(disp, "GB"); break;
+            default: strcpy(disp, "B "); break;
+        }
+        printf("Size of partition table: %g %s \n", c, disp);
+        printf("Size of files: %g %s \n", data, disp);
     }
 
         return 0;

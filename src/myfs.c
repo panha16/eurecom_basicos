@@ -80,7 +80,7 @@ int main(int argc, char* argv[]){
             // printf("size in db %d \n", inode_table[1].db_count);
             // printf("dbptr %d \n", inode_table[1].db_pt);
 
-            if (myfs_write(src_file, dst_path, inode_table, datablocks, fs_name) != 0) return 1;
+            if (myfs_write(&superblock, src_file, dst_path, inode_table, datablocks, fs_name) != 0) return 1;
             
             // myfs_load(fs_name, superblock, inode_table, datablocks);
             load_inodes(fs_name, inode_table);
@@ -124,6 +124,13 @@ int main(int argc, char* argv[]){
             // if (strftime(str, sizeof(str), "%a %b %e %T %Y %Z", tmbuf) == 0)
             //     err(1, "strftime");
             // printf("%s \n", str);
+            // struct timespec tms;
+            // if (clock_gettime(CLOCK_REALTIME,&tms)) {
+            //     return -1;
+            // }
+            unsigned long minimum = time(NULL);
+            printf("%jd \n", (intmax_t) &inode_table[2].timestamp_access.tv_sec);
+            printf("%lu \n", minimum);
 
         } else {
             fprintf(stderr, "Error: Could not open file %s (%s) \n", src_file, strerror(errno));
@@ -161,6 +168,9 @@ int main(int argc, char* argv[]){
         else if (kflag) myfs_size(fs_name, src_file, rflag, 'K', stat_flag, inode_table, datablocks);
         else if (gflag) myfs_size(fs_name, src_file, rflag, 'G', stat_flag, inode_table, datablocks);
         else myfs_size(fs_name, src_file, rflag, 'B', stat_flag, inode_table, datablocks);
+
+        printf("%jd \n", (intmax_t) inode_table[2].timestamp_access.tv_sec);
+
 
     }
     // ------------------------ END OF SIZE --------------------------- //
