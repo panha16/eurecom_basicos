@@ -184,9 +184,7 @@ int main(int argc, char* argv[]){
 
     else if (strcmp(argv[2],commands[2]) == 0){
         printf("read command recognized \n");
-        if (!read_file(fs_name, argv[3], datablocks)) printf("file could not be read\n");
-        printf("successfully read following file : %d \n",read_file(fs_name, argv[3],datablocks));
-        
+        read_file(fs_name,argv[3],datablocks,inode_table);
     }
     exit (0);
     }
