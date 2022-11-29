@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include "fs.h"
 
-#define DATABLOCK_SIZE 4096
 #define SUPERBLOCK_SIZE 32
 
 struct data_block{
