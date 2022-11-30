@@ -54,14 +54,14 @@ If the user specifies -d as a function argument, ls will print the names of all 
 
 ### read
 ```
-int read (char path_to_file)
+int read_file(char* fs_name,char *path_to_file, char* dbs, inode_t* table)
 ```
-The read function prints all the text in the file specified by the argument. 
+The read function prints all the text in the file specified by path_to_file. 
 To do so, it seeks the inode of the file to find the datablocks. Printing the characters located in these datablocks will give us the text of the file. 
 
 ### remove
 ```
-int remove(char path_to_file_or_directory)
+int remove_file(char* fs_name,char *file_or_directory_path, inode_t* inode_table, char* datablocks)
 ```
 The remove function removes the file or the directory specified by the argument. If it is a directory, it is only removed if it is empty. 
 To remove a file, the function erases the datablock data and inode data from the filesystem. Then, it empties the datablocks by setting each character to the null character '\0'.
@@ -87,6 +87,56 @@ Subfunctions
 
 To facilitate the implementation of the forementioned functions and of the filesystem in general, we thought useful to create subfunctions.
 
+### get_inode
+```
+inode_t get_inode(char* filename, inode_t* inode_table)
+```
+This function finds the inode from the filename and returns it.
+
+### get_free_db
+```
+int get_free_db(char* datablocks, int size_in_dbs)
+```
+This function returns the index of the first free datablock among all datablocks.
+
+### get_free_inode
+```
+int get_free_inode(inode_t* inode_table)
+```
+This function returns the index of the first free inode among all inodes.
+
+### myfs_load
+```
+int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks)
+```
+This function loads the filesystem previously initialized. It loads the inode table and all datablocks to be ready for use.
+
+### load_inodes
+```
+int load_inodes(char* fsname, inode_t* inode_table)
+```
+This function loads inode from the saved filesystem.
+
+### myfs_init
+```
+int myfs_init(char* fs_name, int size)
+```
+Budget version of create
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### myfs_init
 ```
 int myfs_init(char* fs_name, int size)
@@ -103,7 +153,7 @@ This function loads the filesystem previously initialized. It loads the inode ta
 ```
 int load_inodes(char* fsname, inode_t* inode_table)
 ```
-
+This function loads the inode from the fielsystem to the table of inode inode_table.s
 ### get_inode
 ```
 inode_t get_inode(char* filename, inode_t* inode_table)
