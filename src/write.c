@@ -11,11 +11,16 @@
 #include <time.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libgen.h>
 #include "fs.h"
 
-int myfs_write(char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name){
+int myfs_write(superblock_t* superblock, char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name){
     struct stat src_file_stat; int quotient, remainder, size_in_dbs, free, free_inode;
-
+    int limit_size = superblock->size;
+    char c;
+    if (DB_COUNT != superblock->db_count){
+        return 1;
+    }
     if (stat(input_file, &src_file_stat) == 0){
         int source_size =  (intmax_t) src_file_stat.st_size;
         char buf[source_size+1];
@@ -64,19 +69,36 @@ LABEL1:
             }
         } else {
             if (free == -1){
-                if (source_size > 5000){
+                if (source_size > limit_size){
                     fprintf(stderr, "Error: File %s is bigger than the file system (%s) \n", input_file, fs_name);
                     exit(1);
                 } else {
                     printf("Warning: Not enough datablocks available for %s \n", input_file);
 DECISION1:
                     printf("Would you like to overwrite the file system? (y/n) \n");
-                    char c;
                     scanf("%c", &c);
                     switch (c){
-                        case 'y': printf("Ok, deletion"); break;
+                        case 'y': printf("Ok, deletion... \n");
+                            intmax_t minimum = time(NULL);
+                            int to_delete, free_space;
+                            for (int i = 0; i < DATABLOCK_SIZE * DB_COUNT; i++){
+                                if (dbs[i] == '\0'){
+                                    free_space++;
+                                }
+                            }
+                            while (free_space < source_size){
+                                for (int i = 2; i < INODE_COUNT; i++){
+                                    if (((intmax_t) inode_table[i].timestamp_modify.tv_sec) < minimum){
+                                    minimum = (intmax_t) inode_table[i].timestamp_modify.tv_sec;
+                                    to_delete = i;
+                                    }
+                                }
+                                printf("Deleted file %s \n", inode_table[to_delete].filename);
+                                // remove(inode_table[to_delete].filename);
+                                free_space = free_space + (inode_table[to_delete].db_count * DATABLOCK_SIZE);
+                            }
                         case 'n': printf("Ok, aborting write instruction... \n"); exit(0);
-                        default: goto DECISION1; break;
+                        default: goto DECISION1;
                     }
                 }
             } else if (free_inode == -1) {
@@ -85,7 +107,7 @@ DECISION2:
                 printf("Would you like to overwrite the file system? (y/n) \n");
                 scanf("%c", &c);
                 switch (c) {
-                    case 'y': printf("Ok, deleting an inode...\n ");goto LABEL1;break;
+                    case 'y': printf("Ok, deleting an inode...\n ");goto LABEL1;
                     case 'n': printf("Ok, aborting write instruction... \n"); exit(0);
                     default: goto DECISION2;
                 } 
