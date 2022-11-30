@@ -137,16 +137,10 @@ int main(int argc, char* argv[]){
         if (S_ISDIR(src_file_stat.st_mode)){
             printf("cannot read a directory ! \n");
         }
-        if (read_file(fs_name,argv[3],datablocks,inode_table) == 0){
-            printf("file content is following : \n");
-            read_file(fs_name,argv[3],datablocks,inode_table);
+        printf("file content is following : \n");
+        read_file(fs_name,argv[3],datablocks,inode_table);
         }
-        else{
-            printf("could not open file because of the following error :\n");
-            read_file(fs_name,argv[3],datablocks,inode_table);
-
-        }
-    }
+    
     // ------------------------ END OF READ --------------------------- //
 
     exit (0);
