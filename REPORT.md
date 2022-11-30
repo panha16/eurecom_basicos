@@ -76,9 +76,9 @@ This function finds the inode from the filename and returns it.
 This function returns the index of the first free datablock among all datablocks.
 
 #### get_free_inode
-`
-int get_free_inode(inode_t* inode_table)
-`
+
+`int get_free_inode(inode_t* inode_table)`
+
 This function returns the index of the first free inode among all inodes.
 
 #### myfs_load
@@ -91,54 +91,5 @@ This function loads the filesystem previously initialized. It loads the inode ta
 
 This function loads inode from the saved filesystem.
 
-#### myfs_init
-`
-int myfs_init(char* fs_name, int size)
-`
-This function initializes the filesystem **fs_name** to the size **size** (in Mbytes).
-
-#### myfs_load
-`
-int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks)
-`
-This function loads the filesystem previously initialized. It loads the inode table and all datablocks to be ready for use.
-
-#### load_inodes
-`
-int load_inodes(char* fsname, inode_t* inode_table)
-`
-This function loads the inode from the fielsystem to the table of inode inode_table.s
-#### get_inode
-`
-inode_t get_inode(char* filename, inode_t* inode_table)
-`
-This function finds the inode from the filename and returns it.
-
-#### get_free_db
-`
-int get_free_db(char* datablocks)
-`
-This function returns the index of the first free datablock among all datablocks.
-
-#### is_inode_free
-`
-bool is_inode_free(int inode_nb, int* inode_table)
-`
-This functions checks if an inode is free or not.
-
-#### get_free_inode
-`
-int get_free_inode(int* inode_table)
-`
-This function returns the index of the first free inode among all inodes.
-
-#### inode_to_str
-`
-void inode_to_str(inode_t* inode)
-`
-
-#### update_inode
-`
-int update_inode(int inode_number, inode_t inode, int* free_inode_table, inode_t* inode_table)
 `
 #### Authors: Ahmed Ghaleb, William Chieu, Guillaume Ung
