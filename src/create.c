@@ -8,9 +8,8 @@
 
 int create(int size, char* fs_name){
     superblock_t sb;
-    inode_t *inodes;
     sb.inode_count = 10000;
-    sb.db_count = (size * 1000000 - 720000 - SUPERBLOCK_SIZE)/512; // The amount of datablocks depends on the size entered by the user
+    sb.db_count = (size * 1000000 - sb.inode_count * sizeof(inode_t) - SUPERBLOCK_SIZE)/512; // The amount of datablocks depends on the size entered by the user
 
     if (sb.db_count <= 0){  // There is a minimum size so there won't be a negative amount of datablocks
         perror("The indicated size is too small !\n");
@@ -18,12 +17,12 @@ int create(int size, char* fs_name){
     }
 
     // Initializing the inodes
-    inodes = malloc(sizeof(inode_t) * sb.inode_count);
+    char* inodes = malloc(sizeof(inode_t) * sb.inode_count);
     int i = 0;   
     for (i=0; i< sb.inode_count * sizeof(inode_t); i++){  // Initializing the 10000 inodes, the size of each file being sizeof(inode_t)
-        strcpy(inodes[i].filename,"\0");  // Using the empty characters to fill one inode
+        strcpy(&inodes[i], "\0");  // Using the empty characters to fill one inode
         if (i % sizeof(inode_t) == 1){
-            strcpy(inodes[i].filename,"/");  // Initializing the root at the first position of each inode      
+            strcpy(&inodes[i], "/");  // Initializing the root at the first position of each inode      
             }
         }     
     
@@ -42,19 +41,18 @@ int create(int size, char* fs_name){
     fwrite(&sb, sizeof(superblock_t), 1, file);
 
     // Writing the inodes
-    for (i=0; i< sizeof(inode_t) * sb.inode_count; i++){
+    for (i=0; i< sb.inode_count; i++){
         fwrite (&(inodes[i]), sizeof(inode_t), 1, file);
     }
-
+   
     // Writing the datablocks
-    for (i=0; i<sb.db_count * DATABLOCK_SIZE; i++){
-        fwrite (&(dbs[i]), sizeof(char), 1, file);
-
-    }
+    fwrite (&(dbs[i]), DATABLOCK_SIZE , sb.db_count, file);
+    
     fclose(file);
     return 0;
 }
 
 int main(){
     create(10,"myfs");
+    return 0;
     }
