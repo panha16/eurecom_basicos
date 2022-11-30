@@ -40,8 +40,8 @@ int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multip
 int myfs_write(superblock_t* superblock, char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name);
 int get_free_db(char* datablocks, int size_in_dbs);
 int load_inodes(char* fsname, inode_t* inode_table);
-int remove_file(char *file_or_directory_path, inode_t* inode_table, char* datablocks);
-int read_file(char* fs_name, const char *path_to_file, char* dbs);
+int remove_file(char* fs_name,char *file_or_directory_path, inode_t* inode_table, char* datablocks);
+int read_file(char* fs_name,char *path_to_file, char* dbs, inode_t* table);
 int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks);
 int myfs_init(char* fs_name, int size);
 
