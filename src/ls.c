@@ -1,68 +1,46 @@
-//Used for basic input/output stream
+#define _GNU_SOURCE
 #include <stdio.h>
-//Used for handling directory files
 #include <dirent.h>
-//For EXIT codes and error handling
-#include <errno.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <errno.h>
 
-void ls(const char *dir,int op_a,int op_l)
-{
-	//Here we will list the directory
-	struct dirent *d;
-	DIR *dh = opendir(dir);
-	if (!dh)
-	{
-		if (errno = ENOENT)
-		{
-			//If the directory is not found
-			perror("Directory doesn't exist");
-		}
-		else
-		{
-			//If the directory is not readable then throw error and exit
-			perror("Unable to read directory");
-		}
-		exit(EXIT_FAILURE);
-	}
-	//While the next entry is not readable we will print directory files
-	while ((d = readdir(dh)) != NULL)
-	{
-		//If hidden files are found we continue
-		if (!op_a && d->d_name[0] == '.')
-			continue;
-		printf("%s  ", d->d_name);
-		if(op_l) printf("\n");
-	}
-	if(!op_l)
-	printf("\n");
+void ls(const char* dir){ // Not working for the FileSystem but works for Windows
+    DIR *rep;
+    rep = opendir(dir);
+    struct dirent *lecture;
+    struct stat statbuf;
+    lecture = readdir(rep);
+    int loop = 0;
+
+    while (lecture != NULL)
+        {
+        printf("%s\n", lecture->d_name);
+        if (loop >= 2){
+            stat(lecture->d_name, &statbuf);
+            if(S_ISREG(statbuf.st_mode) == 0){ 
+                chdir(lecture->d_name);
+                char* current_dir = get_current_dir_name();
+                ls(current_dir);
+                chdir("..");
+                printf("-----------------------\n");
+                }
+            }
+        lecture = readdir(rep);
+        loop = loop + 1;
+        
+        }
+    closedir(rep);
 }
 
-int main(int argc, const char *argv[])
-{
-	if (argc == 1)
-	{
-		ls(".",0,0);
-	}
-	else if (argc == 2)
-	{
-		if (argv[1][0] == '-')
-		{
-			//Checking if option is passed
-			//Options supporting: a, l
-			int op_a = 0, op_l = 0;
-			char *p = (char*)(argv[1] + 1);
-			while(*p){
-				if(*p == 'a') op_a = 1;
-				else if(*p == 'l') op_l = 1;
-				else{
-					perror("Option not available");
-					exit(EXIT_FAILURE);
-				}
-				p++;
-			}
-			ls(".",op_a,op_l);
-		}
-	}
-	return 0;
+int main(int argc, char* argv[]){
+    if (argc > 3){
+        perror("Too many arguments");
+        exit(EXIT_SUCCESS);
+    }
+    ls(".");
+    return 0;
 }
+

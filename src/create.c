@@ -5,46 +5,56 @@
 #include <stdbool.h>
 #include "fs.h"
 
-superblock_t sb;
-inode_t *inodes;
 
 int create(int size, char* fs_name){
+    superblock_t sb;
+    inode_t *inodes;
     sb.inode_count = 10000;
-    sb.db_count = (size * 1000000 - 720000 - SUPERBLOCK_SIZE)/512;
+    sb.db_count = (size * 1000000 - 720000 - SUPERBLOCK_SIZE)/512; // The amount of datablocks depends on the size entered by the user
 
-    if (sb.db_count <= 0){
+    if (sb.db_count <= 0){  // There is a minimum size so there won't be a negative amount of datablocks
         perror("The indicated size is too small !\n");
         exit(EXIT_SUCCESS);
     }
 
-
-    // init inodes
+    // Initializing the inodes
     inodes = malloc(sizeof(inode_t) * sb.inode_count);
-    int i = 0;
-    strcpy(inodes[1].filename,"/");     
-    for (i=2; i< sb.inode_count; i++){
-        strcpy(inodes[i].filename,"\0");       
-    }
-
-    // init dbs
-    char* dbs = malloc(sizeof(char) * sb.db_count * DATABLOCK_SIZE);
-    for (i=0; i<= sb.db_count * DATABLOCK_SIZE; i++){
-        strcpy(&dbs[i], "o");
-    }
+    int i = 0;   
+    for (i=0; i< sb.inode_count * sizeof(inode_t); i++){  // Initializing the 10000 inodes, the size of each file being sizeof(inode_t)
+        strcpy(inodes[i].filename,"\0");  // Using the empty characters to fill one inode
+        if (i % sizeof(inode_t) == 1){
+            strcpy(inodes[i].filename,"/");  // Initializing the root at the first position of each inode      
+            }
+        }     
     
+
+    // Initializing the datablocks
+    char* dbs = malloc(sizeof(char) * sb.db_count * DATABLOCK_SIZE); 
+    for (i=0; i<= sb.db_count * DATABLOCK_SIZE; i++){  // Initializing the amount of datablocks according to the size indicated by the user
+        strcpy(&dbs[i], "\0"); // Using the empty characters to fill one datablock
+        }
+    
+
     FILE* file;
     file = fopen(fs_name,"w+");
 
-    // superblock
+    // Writing the superblock
     fwrite(&sb, sizeof(superblock_t), 1, file);
 
+    // Writing the inodes
+    for (i=0; i< sizeof(inode_t) * sb.inode_count; i++){
+        fwrite (&(inodes[i]), sizeof(inode_t), 1, file);
+    }
+
+    // Writing the datablocks
+    for (i=0; i<sb.db_count * DATABLOCK_SIZE; i++){
+        fwrite (&(dbs[i]), sizeof(char), 1, file);
+
+    }
     fclose(file);
     return 0;
 }
 
-
 int main(){
-    create(10, "myfs");
-    printf("%d",sb.db_count);
-    return 0;
-}
+    create(10,"myfs");
+    }
