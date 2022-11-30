@@ -3,27 +3,20 @@
 #include <string.h>
 #include "fs.h"
 
-int read_file(char* fs_name, const char *path_to_file, char* dbs){
+int read_file(char* fs_name,char *path_to_file, char* dbs, inode_t* table){
 
-    inode_t* inode_table;
-    load_inodes(fs_name, inode_table);
-    
-    //retrieving filename path_to_file
-    char *slash_filename = strrchr(path_to_file, '/');
-    char filename[10000];
-    for (int i = 1; i <strlen(slash_filename);i++){
-        filename[i-1] = slash_filename[i];
-    }    
-
+    load_inodes(fs_name, table);
     //get inode from filename
-    inode_t read_inode = get_inode(filename,inode_table);
+    inode_t read_inode = get_inode(path_to_file,table);
+    if (read_inode.inode_number == -1 ){
+        printf("file is not assigned an inode\n");
+        return -1;
+    }
+    
     int db_number = read_inode.db_pt;
-
-    //reading the datablock linked to the file
-    int i = db_number;
-    while (dbs[i]!='\0'){
+    for (int i = db_number ; i < db_number + (DATABLOCK_SIZE*read_inode.db_count) ; i++){
+        if (dbs[i]=='\0') break;
         printf("%c\n",dbs[i]);
-        i++;
     }
     return 0;
 }

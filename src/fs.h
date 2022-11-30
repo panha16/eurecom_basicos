@@ -32,8 +32,6 @@ typedef struct{
 } superblock_t;
 
 
-// char read(const char *file_path);
-void remove1(const char *file_or_directory_path);
 int ls(const char *dir,int op_a,int op_l);
 inode_t get_inode(char* file_or_directory_path, inode_t* inode_table);
 int get_free_inode(inode_t* inode_table);
