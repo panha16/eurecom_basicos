@@ -20,8 +20,8 @@ int remove_file(char* fs_name,char *file_or_directory_path, inode_t* inode_table
     int db_number = r_inode.db_pt;
     int db_count = r_inode.db_count;
 
-    if (inode_table[r_inode.inode_number] == -1 ){
-        printf("file is not assigned an inode\n")
+    if (r_inode.inode_number == -1 ){
+        printf("file is not assigned an inode\n");
         return -1;
     }
     //erasing file data in the filesystem

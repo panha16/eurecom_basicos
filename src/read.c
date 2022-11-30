@@ -8,8 +8,8 @@ int read_file(char* fs_name,char *path_to_file, char* dbs, inode_t* table){
     load_inodes(fs_name, table);
     //get inode from filename
     inode_t read_inode = get_inode(path_to_file,table);
-    if (inode_table[read_inode.inode_number] == -1 ){
-        printf("file is not assigned an inode\n")
+    if (read_inode.inode_number == -1 ){
+        printf("file is not assigned an inode\n");
         return -1;
     }
     
