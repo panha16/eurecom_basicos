@@ -165,26 +165,53 @@ int main(int argc, char* argv[]){
     }
     // ------------------------ END OF SIZE --------------------------- //
 
+    // ------------------------ REMOVE --------------------------- //
 
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
-        if (argv[4]!=0){        //user wants to remove a file
-            remove_file(argv[4],inode_table, datablocks);
-            printf("succesfully removed file %s\n", argv[4]);
-        }   
-        else {      //user wants to remove a directory
-            // if (ls(argv[3],0,0) == 0){      //directory is empty
-            //     remove(argv[3]);
-            //     printf("succesfully removed directory %s\n", argv[3]);
-            // }
-            // else printf("cannot use remove, directory is not empty\n");
+        //checking that input is a dir or not
+        if (src_file.stat.st_size == 0){
+            printf("file is already empty\n");
+        }
+        if (S_ISDIR(src_file_stat.st_mode)){
+            printf("file to delete is a directory !\n");
+            //deleting dir only if empty
+            if (src_file.stat.st_size != 0){
+                printf("directory is not empty ! cannot use remove function\n");
+                exit(1);
+            }
+            else{
+                remove_file(fs_name,argv[3],inode_table, datablocks);
+                printf("succesfully removed file %s\n", argv[3]);
+            }
+        }
+        if (remove_file(fs_name,argv[3],inode_table, datablocks) == 0){
+            printf("succesfully removed file %s\n", argv[3]);
+        }
+        else {
+            printf("could not remove file\n");
+            exit(1);
+        }
+    }
+    // ------------------------ END OF REMOVE --------------------------- //
+
+    // ------------------------ READ --------------------------- //
+    else if (strcmp(argv[2],commands[2]) == 0){
+        printf("read command recognized \n");
+        if (S_ISDIR(src_file.stat.st_mode)){
+            printf("cannot read a directory ! \n");
+        }
+        if (read_file(fs_name,argv[3],datablocks,inode_table) == 0){
+            printf("file content is following : \n");
+            read_file(fs_name,argv[3],datablocks,inode_table);
+        }
+        else{
+            printf("could not open file because of the following error :\n")
+            read_file(fs_name,argv[3],datablocks,inode_table);
 
         }
     }
+    // ------------------------ END OF READ --------------------------- //
 
-    else if (strcmp(argv[2],commands[2]) == 0){
-        printf("read command recognized \n");
-        read_file(fs_name,argv[3],datablocks,inode_table);
-    }
     exit (0);
-    }
+}
