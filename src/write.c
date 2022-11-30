@@ -18,9 +18,9 @@ int myfs_write(superblock_t* superblock, char* input_file, char* destination_pat
     struct stat src_file_stat; int quotient, remainder, size_in_dbs, free, free_inode;
     int limit_size = superblock->size;
     char c;
-    if (DB_COUNT != superblock->db_count){
-        return 1;
-    }
+    // if (DB_COUNT != superblock->db_count){
+    //     return 1;
+    // }
     if (stat(input_file, &src_file_stat) == 0){
         int source_size =  (intmax_t) src_file_stat.st_size;
         char buf[source_size+1];

@@ -24,6 +24,7 @@ int main(int argc, char* argv[]){
     superblock_t superblock;
 
     char* fs_name = argv[1];
+    
 
     if (argc < 4) {
         printf("usage: myfs <FS name> <cmd> <args> \n");
