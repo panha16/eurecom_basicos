@@ -16,18 +16,15 @@ int myfs_itercount(char* array){
     return i;
 }
 
-
 int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multiple, int stat,
                 inode_t* table, char* dbs){
-    inode_t inode;
-    float c = 0; char disp[3];
+    float c = 0; char disp[3]; int found = 0;
     
-    if (strcmp(path_to_directory, "/") == 0){
-
+    if (strcmp(path_to_directory, "/") == 0){ // If root directory
         for (int i = 0; i < DATABLOCK_SIZE * DB_COUNT; i++){
             if (dbs[i] != '\0') c++;
         }
-        switch(multiple) {
+        switch(multiple) { // Depending on the size argument we display the according unit
             case 'M': c = c / 1000000; strcpy(disp, "MB"); break;
             case 'K': c = c / 1000; strcpy(disp, "KB"); break;
             case 'G': c = c / 1000000000; strcpy(disp, "GB"); break;
@@ -44,23 +41,24 @@ int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multip
         // if (inode.inode_type == 'd'){}
         for (int i = 2; i < INODE_COUNT; i++){
             if (strstr(table[i].filename, parent)){
+                found = 1;
                 for (int p = table[i].db_pt ; p < ((table[i].db_pt + (table[i].db_count * DATABLOCK_SIZE))); p++){
                     if (dbs[p] != '\0') c++;
                     }
             }
         }
-        switch(multiple) {
+        switch(multiple) { // Depending on the size argument we display the according unit
             case 'M': c = c / 1000000; strcpy(disp, "MB"); break;
             case 'K': c = c / 1000; strcpy(disp, "KB"); break;
             case 'G': c = c / 1000000000; strcpy(disp, "GB"); break;
             default: strcpy(disp, "B "); break;
         }
-        printf("Total size of files in %s: %g %s \n", parent, c, disp);
-    // else {
-    //     fprintf(stderr, "Invalid path. Path must point to directory \n");
-    //     printf("usage: ./myfs <fs> <opt -b/-k/-m/-g> <opt -r> <path-to-directory> \n");
-    //     return 1;
-    //     }
+        if (found) printf("Total size of files in %s: %g %s \n", parent, c, disp);
+        else {
+            fprintf(stderr, "Invalid path. Path must point to directory \n");
+            printf("usage: ./myfs <fs> <opt -b/-k/-m/-g> <opt -r> <path-to-directory> \n");
+            exit(1);
+        }
     }
 
     if (stat) {

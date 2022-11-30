@@ -3,7 +3,6 @@
 //  Filesystem main file.
 //  Made by Ahmed Ghaleb, Guillaume Ung & William Chieu.
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +11,6 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/time.h>
-
 #include <stdint.h>
 #include <stdbool.h>
 #include <fcntl.h>
@@ -24,9 +22,7 @@ int main(int argc, char* argv[]){
     int rflag = 0, kflag = 0, mflag = 0, gflag = 0;
     static int stat_flag = 0;
     superblock_t superblock;
-    
-    // char *rvalue = NULL;
-    // char *dvalue = NULL;
+
     char* fs_name = argv[1];
 
     if (argc < 4) {
@@ -49,12 +45,8 @@ int main(int argc, char* argv[]){
     if (stat(fs_name, &fs_file_stat) != 0){
         myfs_init(fs_name, 10);
     }
-
+    // loading the saved filesystem
     myfs_load(fs_name, superblock, inode_table, datablocks);
-
-    superblock.inode_count = 10000;
-    superblock.db_count = 1500;
-    superblock.inode_table_pt = inode_table;
 
     // ------------------------ WRITE --------------------------- //
 
@@ -64,77 +56,13 @@ int main(int argc, char* argv[]){
 
         if (stat(src_file, &src_file_stat) == 0){
 
-            // for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
-            // printf("file name %s \n", inode_table[2].filename);
-            // printf("inode number %d \n", inode_table[2].inode_number);
-            // printf("size in db %d \n", inode_table[2].db_count);
-            // printf("dbptr %d \n", inode_table[2].db_pt);
-
-            // printf("file name %s \n", inode_table[0].filename);
-            // printf("inode number %d \n", inode_table[0].inode_number);
-            // printf("size in db %d \n", inode_table[0].db_count);
-            // printf("dbptr %d \n", inode_table[0].db_pt);
-            
-            // printf("file name %s \n", inode_table[1].filename);
-            // printf("inode number %d \n", inode_table[1].inode_number);
-            // printf("size in db %d \n", inode_table[1].db_count);
-            // printf("dbptr %d \n", inode_table[1].db_pt);
-
             if (myfs_write(&superblock, src_file, dst_path, inode_table, datablocks, fs_name) != 0) return 1;
-            
-            // myfs_load(fs_name, superblock, inode_table, datablocks);
-            load_inodes(fs_name, inode_table);
-            // for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
-            printf("file name %s \n", inode_table[2].filename);
-            printf("inode number %d \n", inode_table[2].inode_number);
-            printf("size in db %d \n", inode_table[2].db_count);
-            printf("dbptr %d \n", inode_table[2].db_pt);
-
-            printf("file name %s \n", inode_table[0].filename);
-            printf("inode number %d \n", inode_table[0].inode_number);
-            printf("size in db %d \n", inode_table[0].db_count);
-            printf("dbptr %d \n", inode_table[0].db_pt);
-            
-            printf("file name %s \n", inode_table[1].filename);
-            printf("inode number %d \n", inode_table[1].inode_number);
-            printf("size in db %d \n", inode_table[1].db_count);
-            printf("dbptr %d \n", inode_table[1].db_pt);
-
-            printf("file name %s \n", inode_table[3].filename);
-            printf("inode number %d \n", inode_table[3].inode_number);
-            printf("size in db %d \n", inode_table[3].db_count);
-            printf("dbptr %d \n", inode_table[3].db_pt);
-
-            printf("file name %s \n", inode_table[4].filename);
-            printf("inode number %d \n", inode_table[4].inode_number);
-            printf("size in db %d \n", inode_table[4].db_count);
-            printf("dbptr %d \n", inode_table[4].db_pt);
-            
-
-            // for (int i =0; i<20; i++) printf("%c \n", datablocks[i]);
-
-
-            // William, tu peux utiliser ça pour print les time des fichiers
-            // struct tm *tmbuf;
-            // char str[64];
-
-            // tmbuf = gmtime(&inode_table[2].timestamp_access);
-            // if (tmbuf == NULL)
-            //     err(1, "gmtime");
-            // if (strftime(str, sizeof(str), "%a %b %e %T %Y %Z", tmbuf) == 0)
-            //     err(1, "strftime");
-            // printf("%s \n", str);
-            // struct timespec tms;
-            // if (clock_gettime(CLOCK_REALTIME,&tms)) {
-            //     return -1;
-            // }
-            unsigned long minimum = time(NULL);
-            printf("%jd \n", (intmax_t) &inode_table[2].timestamp_access.tv_sec);
-            printf("%lu \n", minimum);
+                load_inodes(fs_name, inode_table);
 
         } else {
             fprintf(stderr, "Error: Could not open file %s (%s) \n", src_file, strerror(errno));
             printf("usage: ./myfs <fs> write <src-file> <destination-path> \n");
+            return errno;
         }
     }
 
@@ -168,9 +96,6 @@ int main(int argc, char* argv[]){
         else if (kflag) myfs_size(fs_name, src_file, rflag, 'K', stat_flag, inode_table, datablocks);
         else if (gflag) myfs_size(fs_name, src_file, rflag, 'G', stat_flag, inode_table, datablocks);
         else myfs_size(fs_name, src_file, rflag, 'B', stat_flag, inode_table, datablocks);
-
-        printf("%jd \n", (intmax_t) inode_table[2].timestamp_access.tv_sec);
-
 
     }
     // ------------------------ END OF SIZE --------------------------- //
