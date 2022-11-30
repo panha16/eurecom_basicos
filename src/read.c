@@ -1,18 +1,22 @@
-#include "fs.h"
 #include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#include "fs.h"
 
-int read_file(const char *path_to_file){
-    FILE *fptr;
-    char file_content[1000];
-    fptr = fopen("path_to_file","r");
-    if (!fptr || fptr == NULL) {
-        printf("cannot open file");
+int read_file(char* fs_name,char *path_to_file, char* dbs, inode_t* table){
+
+    load_inodes(fs_name, table);
+    //get inode from filename
+    inode_t read_inode = get_inode(path_to_file,table);
+    if (read_inode.inode_number == -1 ){
+        printf("file is not assigned an inode\n");
         return -1;
     }
-    while (fgets(file_content,sizeof(file_content),fptr) != NULL){
-        printf("%s",file_content);
+    
+    int db_number = read_inode.db_pt;
+    for (int i = db_number ; i < db_number + (DATABLOCK_SIZE*read_inode.db_count) ; i++){
+        if (dbs[i]=='\0') break;
+        printf("%c\n",dbs[i]);
     }
-    fclose(fptr);
     return 0;
-
 }

@@ -3,32 +3,28 @@
 //  Filesystem main file.
 //  Made by Ahmed Ghaleb, Guillaume Ung & William Chieu.
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/time.h>
 #include <stdint.h>
+#include <stdbool.h>
+#include <fcntl.h>
 #include "fs.h"
 
 
 int main(int argc, char* argv[]){
 
-    int rflag;
-    // int dflag;
-    int bflag;
-    int kflag;
-    int mflag;
-    int gflag;
-    static int stat_flag;
-    
-    // char *rvalue = NULL;
-    // char *dvalue = NULL;
-    char* src_file;
-    char* dst_path;
+    int rflag = 0, kflag = 0, mflag = 0, gflag = 0;
+    static int stat_flag = 0;
+    superblock_t superblock;
+
     char* fs_name = argv[1];
+    
 
     if (argc < 4) {
         printf("usage: myfs <FS name> <cmd> <args> \n");
@@ -41,23 +37,40 @@ int main(int argc, char* argv[]){
     // so it is reasonable to have only one stat struct
     struct stat src_file_stat;
 
+    // --------------------------- SUPERBLOCK ------------------------ //
+    inode_t inode_table[10000];
+    char datablocks[DB_COUNT * DATABLOCK_SIZE];
+
+    // J'utilise ça pour effectuer mes tests en attendant `create` — Ahmed
+    struct stat fs_file_stat;
+    if (stat(fs_name, &fs_file_stat) != 0){
+        myfs_init(fs_name, 10);
+    }
+    // loading the saved filesystem
+    myfs_load(fs_name, superblock, inode_table, datablocks);
+
+    // ------------------------ WRITE --------------------------- //
+
     if ((strcmp(argv[2], commands[1]) == 0) && (argc > 4)){
-        printf("write command recognized \n");
-        printf("filesystem: %s, source file: %s, dest file: %s \n", fs_name, argv[3], argv[4]);
         char* src_file = argv[3];
         char* dst_path = argv[4];
 
         if (stat(src_file, &src_file_stat) == 0){
-            
-        } else {
-            // File can't be located
-            printf("Error!!! \n");
-        }
 
+            if (myfs_write(&superblock, src_file, dst_path, inode_table, datablocks, fs_name) != 0) return 1;
+                load_inodes(fs_name, inode_table);
+
+        } else {
+            fprintf(stderr, "Error: Could not open file %s (%s) \n", src_file, strerror(errno));
+            printf("usage: ./myfs <fs> write <src-file> <destination-path> \n");
+            return errno;
+        }
     }
 
+    // ------------------------ END OF WRITE --------------------------- //
+
+    // ------------------------ SIZE --------------------------- //
     else if (strcmp(argv[2], commands[4]) == 0){
-        printf("size command recognized, stat flag state: %d \n", stat_flag);
         char* src_file = argv[argc-1]; // according to the project description, path-to-dir comes last
         for (int i = 2; i < argc; i++){
             if (strcmp(argv[i], "-stat") == 0){
@@ -66,55 +79,75 @@ int main(int argc, char* argv[]){
             if (strcmp(argv[i], "-r") == 0){
                 rflag = 1;
             }
-            if (strcmp(argv[i], "-b") == 0){
-                bflag = 1;
-            }
             if ((strcmp(argv[i], "-mb") == 0) || (strcmp(argv[i], "-MB") == 0) 
                 || (strcmp(argv[i], "-m") == 0) || (strcmp(argv[i], "-M") == 0)){
                 mflag = 1;
-                break;
             }
             if ((strcmp(argv[i], "-kb") == 0) || (strcmp(argv[i], "-kb") == 0)
                 || (strcmp(argv[i], "-k") == 0) || (strcmp(argv[i], "-K") == 0)){
-                printf("size will be in Kbytes \n");
                 kflag = 1;
-                break;
             }
             if ((strcmp(argv[i], "-gb") == 0) || (strcmp(argv[i], "-GB") == 0)
                 || (strcmp(argv[i], "-g") == 0) || (strcmp(argv[i], "-G") == 0)){
                 gflag = 1;  
-                break;
             }
         }
-        if (stat(src_file, &src_file_stat) == 0){
-            printf("File size:                %jd bytes\n", (intmax_t) src_file_stat.st_size);
-        } else {
-            // File can't be located
-            printf("Error!!! \n");
-        }
+        
+        if (mflag) myfs_size(fs_name, src_file, rflag, 'M', stat_flag, inode_table, datablocks);
+        else if (kflag) myfs_size(fs_name, src_file, rflag, 'K', stat_flag, inode_table, datablocks);
+        else if (gflag) myfs_size(fs_name, src_file, rflag, 'G', stat_flag, inode_table, datablocks);
+        else myfs_size(fs_name, src_file, rflag, 'B', stat_flag, inode_table, datablocks);
+
     }
+    // ------------------------ END OF SIZE --------------------------- //
+
+    // ------------------------ REMOVE --------------------------- //
 
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
-        if (argv[4]!=0){        //user wants to remove a file
-            remove_file(argv[4]);
-            printf("succesfully removed file %s\n", argv[4]);
-        }   
-        else {      //user wants to remove a directory
-            if (ls(argv[3]) == 0){      //directory is empty
-                remove_file(argv[3]);
-                printf("succesfully removed directory %s\n", argv[3]);
+        //checking that input is a dir or not
+        if (src_file_stat.st_size == 0){
+            printf("file is already empty\n");
+        }
+        if (S_ISDIR(src_file_stat.st_mode)){
+            printf("file to delete is a directory !\n");
+            //deleting dir only if empty
+            if (src_file_stat.st_size != 0){
+                printf("directory is not empty ! cannot use remove function\n");
+                exit(1);
             }
-            else printf("cannot use remove, directory is not empty\n");
+            else{
+                remove_file(fs_name,argv[3],inode_table, datablocks);
+                printf("succesfully removed file %s\n", argv[3]);
+            }
+        }
+        if (remove_file(fs_name,argv[3],inode_table, datablocks) == 0){
+            printf("succesfully removed file %s\n", argv[3]);
+        }
+        else {
+            printf("could not remove file\n");
+            exit(1);
+        }
+    }
+    // ------------------------ END OF REMOVE --------------------------- //
+
+    // ------------------------ READ --------------------------- //
+    else if (strcmp(argv[2],commands[2]) == 0){
+        printf("read command recognized \n");
+        if (S_ISDIR(src_file_stat.st_mode)){
+            printf("cannot read a directory ! \n");
+        }
+        if (read_file(fs_name,argv[3],datablocks,inode_table) == 0){
+            printf("file content is following : \n");
+            read_file(fs_name,argv[3],datablocks,inode_table);
+        }
+        else{
+            printf("could not open file because of the following error :\n");
+            read_file(fs_name,argv[3],datablocks,inode_table);
 
         }
     }
+    // ------------------------ END OF READ --------------------------- //
 
-    else if (strcmp(argv[2],commands[2]) == 0){
-        printf("read command recognized \n");
-        if (!read_file(argv[3])) printf("file could not be read\n");
-        printf("successfully read following file : %d \n",read_file(argv[3]));
-        
-    }
     exit (0);
-    }
+}
