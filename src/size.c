@@ -21,7 +21,7 @@ int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multip
     float c = 0; char disp[3]; int found = 0;
     
     if (strcmp(path_to_directory, "/") == 0){ // If root directory
-        for (int i = 0; i < DATABLOCK_SIZE * DB_COUNT; i++){
+        for (int i = 0; i < DATABLOCK_SIZE * sb.db_count; i++){
             if (dbs[i] != '\0') c++;
         }
         switch(multiple) { // Depending on the size argument we display the according unit
@@ -71,7 +71,7 @@ int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multip
         }
         fclose(fp);
 
-        for (int i = 0; i < DATABLOCK_SIZE * DB_COUNT; i++){
+        for (int i = 0; i < DATABLOCK_SIZE * sb.db_count; i++){
             if (dbs[i] != '\0'){
                 data++;
             }

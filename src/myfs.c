@@ -39,7 +39,7 @@ int main(int argc, char* argv[]){
 
     // --------------------------- SUPERBLOCK ------------------------ //
     inode_t inode_table[10000];
-    char datablocks[DB_COUNT * DATABLOCK_SIZE];
+    char datablocks[sb.db_count * DATABLOCK_SIZE];
 
     // J'utilise ça pour effectuer mes tests en attendant `create` — Ahmed
     struct stat fs_file_stat;

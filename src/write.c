@@ -81,7 +81,7 @@ DECISION1:
                         case 'y': printf("Ok, deletion... \n");
                             intmax_t minimum = time(NULL);
                             int to_delete, free_space;
-                            for (int i = 0; i < DATABLOCK_SIZE * DB_COUNT; i++){
+                            for (int i = 0; i < DATABLOCK_SIZE * sb.db_count; i++){
                                 if (dbs[i] == '\0'){
                                     free_space++;
                                 }

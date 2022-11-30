@@ -35,12 +35,3 @@ void ls(const char* dir){ // Not working for the FileSystem but works for Window
     closedir(rep);
 }
 
-int main(int argc, char* argv[]){
-    if (argc > 3){
-        perror("Too many arguments");
-        exit(EXIT_SUCCESS);
-    }
-    ls(".");
-    return 0;
-}
-

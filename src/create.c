@@ -9,7 +9,7 @@
 int create(int size, char* fs_name){
     superblock_t sb;
     sb.inode_count = 10000;
-    sb.db_count = (size * 1000000 - sb.inode_count * sizeof(inode_t) - SUPERBLOCK_SIZE)/512; // The amount of datablocks depends on the size entered by the user
+    sb.db_count = (size * 1000000 - sb.inode_count * sizeof(inode_t) - SUPERBLOCK_SIZE)/DATABLOCK_SIZE; // The amount of datablocks depends on the size entered by the user
 
     if (sb.db_count <= 0){  // There is a minimum size so there won't be a negative amount of datablocks
         perror("The indicated size is too small !\n");

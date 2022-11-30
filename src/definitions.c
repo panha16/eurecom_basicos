@@ -57,7 +57,7 @@ int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char*
     fread(inode_table, sizeof(inode_t), INODE_COUNT, infile);
 
     fseek(infile, sizeof(superblock_t) + INODE_COUNT * sizeof(inode_t), SEEK_SET);
-    fread(datablocks, sizeof(char), DB_COUNT * DATABLOCK_SIZE, infile);
+    fread(datablocks, sizeof(char), sb.db_count * DATABLOCK_SIZE, infile);
 
     fclose(infile);
     return 0;
@@ -73,7 +73,7 @@ int load_inodes(char* fsname, inode_t* inode_table){
 /*  initializes the file system — budget version of create */
 int myfs_init(char* fs_name, int size){
     FILE *fp = fopen(fs_name, "wb+");
-    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT * DATABLOCK_SIZE;
+    ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + sb.db_count * DATABLOCK_SIZE;
     void* buf = malloc(fs_size+1);
     ssize_t bytes_written = fwrite(buf, sizeof(buf),1, fp);
     printf("init: %ld bytes written \n", sizeof(buf));

@@ -9,7 +9,7 @@ int read_file(char* fs_name,char *path_to_file, char* dbs, inode_t* table){
     //get inode from filename
     inode_t read_inode = get_inode(path_to_file,table);
     if (read_inode.inode_number == -1 ){
-        printf("file is not assigned an inode\n");
+        printf("file does not exist !\n");
         return -1;
     }
     

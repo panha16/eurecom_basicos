@@ -5,7 +5,6 @@
 #define DATABLOCK_SIZE 512 /*! */
 #define SUPERBLOCK_SIZE 32
 #define INODE_COUNT 10000 /*! Number of inodes in the FS */
-#define DB_COUNT 1500
 #define CHARCNT 6144000
 #include <sys/time.h>
 #include <time.h>
