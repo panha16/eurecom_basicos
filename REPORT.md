@@ -16,7 +16,7 @@ To implement this filesystem, we had to define its structure by organizing the s
 Filesystem structure
 ===============
 
-The filesystem is divided into 4 parts : the superblock, the inodes, the datablock and the files. We decided that our filesystem should contain 1500 data blocks and 10000 inodes. Given that a datablock weighs 4096 bytes and an inode 72 bytes, all the datablocks and the inodes amount to 6.144Mbytes and 0.72Mbytes respectively. The superblock size is not mentioned here as it is very small compared to the rest.
+The filesystem is a file divided into 4 parts : the superblock, the inodes, the datablock and the files. We decided that our filesystem should contain **1500 data blocks** and **10000 inodes**. Given that a datablock weighs 4096 bytes and an inode 72 bytes, all the datablocks and the inodes amount to 6.144Mbytes and 0.72Mbytes respectively. The superblock size is not mentioned here as it is very small compared to the rest.
 
 
 ### Superblock
@@ -64,7 +64,7 @@ To do so, it seeks the inode of the file to find the datablocks. Printing the ch
 int remove(char path_to_file_or_directory)
 ```
 The remove function removes the file or the directory specified by the argument. If it is a directory, it is only removed if it is empty. 
-To remove a file, the function erases all the datablocks linked to the file and resets the inode.
+To remove a file, the function erases the datablock data and inode data from the filesystem. Then, it empties the datablocks by setting each character to the null character '\0'.
 
 ### write
 ```
