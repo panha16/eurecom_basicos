@@ -6,6 +6,7 @@
 
 int read_file(char* fs_name,char *path_to_file, char* dbs, inode_t* table){
 
+    //loading inode table
     load_inodes(fs_name, table);
     
     //get inode from filename
@@ -15,6 +16,7 @@ int read_file(char* fs_name,char *path_to_file, char* dbs, inode_t* table){
         return -1;
     }
     
+    //adding datablocks characters into a string 
     int db_number = read_inode.db_pt;
     char* content = malloc(DATABLOCK_SIZE*read_inode.db_count);
     int k = 0;
