@@ -22,7 +22,9 @@ inode_t get_inode(char* filename, inode_t* inode_table){
 }
 
 /* Returns pointer to size_in_dbs free datablocks */
-int get_free_db(char* datablocks, int size_in_dbs){
+int get_free_db(char* datablocks, int size_in_dbs,int nb_db){
+    int DB_COUNT = nb_db;
+
     int c = 0; int i;
     for (i = 0; (i < (DB_COUNT * DATABLOCK_SIZE)) && (c != size_in_dbs); i = i + DATABLOCK_SIZE){
         for (int j = 0; j < size_in_dbs; j++){
@@ -50,16 +52,19 @@ void inode_to_str(inode_t* inode){
 
 /* Reads the file system and retrieves all the components */
 int myfs_load(char* fsname, superblock_t superblock, inode_t* inode_table, char* datablocks){
-
+    int DB_COUNT = superblock.db_count; 
     FILE* infile = fopen (fsname, "rb");
 
     fseek(infile, sizeof(superblock_t), SEEK_SET);
     fread(inode_table, sizeof(inode_t), INODE_COUNT, infile);
 
     fseek(infile, sizeof(superblock_t) + INODE_COUNT * sizeof(inode_t), SEEK_SET);
-    fread(datablocks, sizeof(char), DB_COUNT * DATABLOCK_SIZE, infile);
+
+    fread(datablocks, sizeof(char),DB_COUNT * DATABLOCK_SIZE, infile);
+
 
     fclose(infile);
+    
     return 0;
 }
 /* Retrieves only inodes from the saved file system */ 
@@ -71,7 +76,7 @@ int load_inodes(char* fsname, inode_t* inode_table){
     return 0;
 }
 /*  initializes the file system — budget version of create */
-int myfs_init(char* fs_name, int size){
+/* int myfs_init(char* fs_name, int size){
     FILE *fp = fopen(fs_name, "wb+");
     ssize_t fs_size = sizeof(superblock_t) + (sizeof(inode_t) * INODE_COUNT) + DB_COUNT * DATABLOCK_SIZE;
     void* buf = malloc(fs_size+1);
@@ -109,4 +114,4 @@ int myfs_init(char* fs_name, int size){
     
     if (fclose(fp) == 0) printf("filesystem %s descriptor closed sucessfully \n", fs_name);
     return 0;
-}
+} */

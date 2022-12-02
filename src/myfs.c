@@ -39,22 +39,39 @@ int main(int argc, char* argv[]){
 
     // --------------------------- SUPERBLOCK ------------------------ //
     inode_t inode_table[10000];
-    char datablocks[DB_COUNT * DATABLOCK_SIZE];
+
+
+    // --------------------------- CREATE ------------------------ //
+    if ((strcmp(argv[2],commands[0]) == 0)){
+        printf("create command recognized\n");
+        if (create(atoi(argv[3]),fs_name) == 0) printf("successfully created file system %s\n",fs_name);
+
+    }
+
+    FILE* infile = fopen(fs_name, "rb");
+
+    fseek(infile, 0, SEEK_SET);
+    fread(&superblock, sizeof(superblock_t), 1, infile);
+    fclose(infile);
+
+    char datablocks[superblock.db_count]; 
+    int DB_COUNT = superblock.db_count;
 
     // J'utilise ça pour effectuer mes tests en attendant `create` — Ahmed
     struct stat fs_file_stat;
-    if (stat(fs_name, &fs_file_stat) != 0){
-        myfs_init(fs_name, 10);
-    }
+
     // loading the saved filesystem
     myfs_load(fs_name, superblock, inode_table, datablocks);
+
+    // ------------------------ END OF CREATE --------------------------- //
+
 
     // ------------------------ WRITE --------------------------- //
 
     if ((strcmp(argv[2], commands[1]) == 0) && (argc > 4)){
         char* src_file = argv[3];
         char* dst_path = argv[4];
-
+    
         if (stat(src_file, &src_file_stat) == 0){
 
             if (myfs_write(&superblock, src_file, dst_path, inode_table, datablocks, fs_name) != 0) return 1;
@@ -68,6 +85,7 @@ int main(int argc, char* argv[]){
     }
 
     // ------------------------ END OF WRITE --------------------------- //
+
 
     // ------------------------ SIZE --------------------------- //
     else if (strcmp(argv[2], commands[4]) == 0){
@@ -93,10 +111,10 @@ int main(int argc, char* argv[]){
             }
         }
         
-        if (mflag) myfs_size(fs_name, src_file, rflag, 'M', stat_flag, inode_table, datablocks);
-        else if (kflag) myfs_size(fs_name, src_file, rflag, 'K', stat_flag, inode_table, datablocks);
-        else if (gflag) myfs_size(fs_name, src_file, rflag, 'G', stat_flag, inode_table, datablocks);
-        else myfs_size(fs_name, src_file, rflag, 'B', stat_flag, inode_table, datablocks);
+        if (mflag) myfs_size(fs_name, src_file, rflag, 'M', stat_flag, inode_table, datablocks,DB_COUNT);
+        else if (kflag) myfs_size(fs_name, src_file, rflag, 'K', stat_flag, inode_table, datablocks,DB_COUNT);
+        else if (gflag) myfs_size(fs_name, src_file, rflag, 'G', stat_flag, inode_table, datablocks,DB_COUNT);
+        else myfs_size(fs_name, src_file, rflag, 'B', stat_flag, inode_table, datablocks,DB_COUNT);
 
     }
     // ------------------------ END OF SIZE --------------------------- //
@@ -137,14 +155,9 @@ int main(int argc, char* argv[]){
         if (S_ISDIR(src_file_stat.st_mode)){
             printf("cannot read a directory ! \n");
         }
-        if (read_file(fs_name,argv[3],datablocks,inode_table) == 0){
+        else{
             printf("file content is following : \n");
             read_file(fs_name,argv[3],datablocks,inode_table);
-        }
-        else{
-            printf("could not open file because of the following error :\n");
-            read_file(fs_name,argv[3],datablocks,inode_table);
-
         }
     }
     // ------------------------ END OF READ --------------------------- //
