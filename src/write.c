@@ -20,17 +20,18 @@ int myfs_write(superblock_t* superblock, char* input_file, char* destination_pat
 
     int limit_size = superblock->size;
     char c;
-    // if (DB_COUNT != superblock->db_count){
-    //     return 1;
-    // }
+
     if (stat(input_file, &src_file_stat) == 0){
         int source_size =  (intmax_t) src_file_stat.st_size;
-        char buf[source_size+1];
+        if (source_size > 5000000) {
+            printf("file is bigger than 5 Mbytes !\n");
+            return 1;
+        }    
+        char* buf = malloc(source_size + 1);
         if (S_ISDIR(src_file_stat.st_mode)){
             printf("Cannot write %s to %s, because source is not a file\n Exiting...\n", input_file, destination_path);
             return 1;
         }
-        printf("AAAAAA !\n");
         int fd = open(input_file, O_RDONLY);
         read(fd, buf, source_size+1);
         close(fd);

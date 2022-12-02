@@ -54,10 +54,9 @@ int main(int argc, char* argv[]){
     fread(&superblock, sizeof(superblock_t), 1, infile);
     fclose(infile);
 
-    char datablocks[superblock.db_count]; 
     int DB_COUNT = superblock.db_count;
+    char* datablocks = malloc(sizeof(char)*DB_COUNT*DATABLOCK_SIZE); 
 
-    // J'utilise ça pour effectuer mes tests en attendant `create` — Ahmed
     struct stat fs_file_stat;
 
     // loading the saved filesystem
@@ -124,13 +123,10 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
         //checking that input is a dir or not
-        if (src_file_stat.st_size == 0){
-            printf("file is already empty\n");
-        }
-        if (S_ISDIR(src_file_stat.st_mode)){
+        if (S_ISDIR(fs_file_stat.st_mode)){
             printf("file to delete is a directory !\n");
             //deleting dir only if empty
-            if (src_file_stat.st_size != 0){
+            if (fs_file_stat.st_size != 0){
                 printf("directory is not empty ! cannot use remove function\n");
                 exit(1);
             }
@@ -152,7 +148,7 @@ int main(int argc, char* argv[]){
     // ------------------------ READ --------------------------- //
     else if (strcmp(argv[2],commands[2]) == 0){
         printf("read command recognized \n");
-        if (S_ISDIR(src_file_stat.st_mode)){
+        if (S_ISDIR(fs_file_stat.st_mode)){
             printf("cannot read a directory ! \n");
         }
         else{

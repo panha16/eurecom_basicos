@@ -23,13 +23,6 @@ int create(int size, char* fs_name){
         strcpy(&inodes[i], "\0");  // Using the empty characters to fill one inode
     }     
 
-    // Initializing the datablocks
-    char* dbs = malloc(sizeof(char) * sb.db_count * DATABLOCK_SIZE); 
-/*     for (i=0; i<= sb.db_count * DATABLOCK_SIZE; i++){  // Initializing the amount of datablocks according to the size indicated by the user
-        strcpy(&dbs[i], "\0"); // Using the empty characters to fill one datablock
-        } */ 
-    
-
     FILE* file;
     file = fopen(fs_name,"w+");
 
@@ -40,10 +33,7 @@ int create(int size, char* fs_name){
     for (i=0; i< sb.inode_count; i++){
         fwrite (&(inodes[i]), sizeof(inode_t), 1, file);
     }
-   
-    // Writing the datablocks
-/*     fwrite (&(dbs[i]), DATABLOCK_SIZE , sb.db_count, file);
- */    
+     
     fclose(file);
     return 0;
 }
