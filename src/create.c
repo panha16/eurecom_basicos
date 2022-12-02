@@ -8,6 +8,8 @@
 
 int create(int size, char* fs_name){
     superblock_t sb;
+    sb.size = size*1000000;
+    sb.inode_pt = 16;
     sb.inode_count = 10000;
     sb.db_count = (size * 1000000 - sb.inode_count * sizeof(inode_t) - SUPERBLOCK_SIZE)/DATABLOCK_SIZE; // The amount of datablocks depends on the size entered by the user
     if (sb.db_count <= 0){  // There is a minimum size so there won't be a negative amount of datablocks

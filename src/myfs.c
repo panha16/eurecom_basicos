@@ -46,6 +46,7 @@ int main(int argc, char* argv[]){
         printf("create command recognized\n");
         if (create(atoi(argv[3]),fs_name) == 0) printf("successfully created file system %s\n",fs_name);
 
+
     }
 
     FILE* infile = fopen(fs_name, "rb");
@@ -123,10 +124,10 @@ int main(int argc, char* argv[]){
     else if (strcmp(argv[2],commands[3])==0){     
         printf("remove command recognized \n");
         //checking that input is a dir or not
-        if (S_ISDIR(fs_file_stat.st_mode)){
+        if (S_ISDIR(src_file_stat.st_mode)){
             printf("file to delete is a directory !\n");
             //deleting dir only if empty
-            if (fs_file_stat.st_size != 0){
+            if (src_file_stat.st_size != 0){
                 printf("directory is not empty ! cannot use remove function\n");
                 exit(1);
             }
@@ -148,7 +149,7 @@ int main(int argc, char* argv[]){
     // ------------------------ READ --------------------------- //
     else if (strcmp(argv[2],commands[2]) == 0){
         printf("read command recognized \n");
-        if (S_ISDIR(fs_file_stat.st_mode)){
+        if (S_ISDIR(src_file_stat.st_mode)){
             printf("cannot read a directory ! \n");
         }
         else{

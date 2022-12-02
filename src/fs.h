@@ -25,9 +25,7 @@ typedef struct{
     int size;
     int db_count;
     int inode_count;
-    inode_t* inode_table_pt;
-    int free_inode_pt;
-    int free_db_pt;
+    int inode_pt;
 } superblock_t;
 
 
