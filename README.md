@@ -1,4 +1,4 @@
-# basicos
+# BasicOS
 
 The objective of the project is to program a new file system that can handle a "no space left on device" error: this new file system you are going to implement assumes that, when the file system is full, the file system deletes the oldest files until it can store the new file.
 
@@ -16,10 +16,12 @@ myfs /tmp/FS write ./mylovelyfile /internaldirectory1/foo
 ```
 
 ## Structure 
-| Superblock                                                                                       	| inodes 	| data blocks 	|
-|--------------------------------------------------------------------------------------------------	|--------	|-------------	|
-| Type, # of Inodes, # of DB * to the inode table, * to list of free inodes * to list of free DB   	| 10000  	| 1500        	|
-| 32 bytes                                                                                         	| 0.72   MB	| 6.144 MB  	|
+```
+|**Superblock**|  **Inodes** | **Datablocks**|
+|--------------|-------------|---------------|
+|  Fixed	#  | Fixed #	 | Variable #    |
+|	 32B       | 10000 * 12B | x * 512B 	 |
+```
 
 ### Repartition:
 - William: ls, create
