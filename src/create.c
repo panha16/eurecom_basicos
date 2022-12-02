@@ -10,7 +10,6 @@ int create(int size, char* fs_name){
     superblock_t sb;
     sb.inode_count = 10000;
     sb.db_count = (size * 1000000 - sb.inode_count * sizeof(inode_t) - SUPERBLOCK_SIZE)/DATABLOCK_SIZE; // The amount of datablocks depends on the size entered by the user
-
     if (sb.db_count <= 0){  // There is a minimum size so there won't be a negative amount of datablocks
         perror("The indicated size is too small !\n");
         exit(EXIT_SUCCESS);
@@ -18,12 +17,11 @@ int create(int size, char* fs_name){
 
     // Initializing the inodes
     char* inodes = malloc(sizeof(inode_t) * sb.inode_count);
-    int i = 0;   
+    int i = 0;  
+ 
     for (i=0; i< sb.inode_count * sizeof(inode_t); i++){  // Initializing the 10000 inodes, the size of each file being sizeof(inode_t)
         strcpy(&inodes[i], "\0");  // Using the empty characters to fill one inode
-    strcpy(&inodes[1], "/");  // Initializing the root at the first position of each inode      
     }     
-    
 
     // Initializing the datablocks
     char* dbs = malloc(sizeof(char) * sb.db_count * DATABLOCK_SIZE); 

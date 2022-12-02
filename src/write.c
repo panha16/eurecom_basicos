@@ -16,6 +16,8 @@
 
 int myfs_write(superblock_t* superblock, char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name){
     struct stat src_file_stat; int quotient, remainder, size_in_dbs, free, free_inode;
+    int DB_COUNT = superblock->db_count;
+
     int limit_size = superblock->size;
     char c;
     // if (DB_COUNT != superblock->db_count){
@@ -39,7 +41,7 @@ LABEL1:
         remainder = source_size % DATABLOCK_SIZE;
         size_in_dbs = quotient + ((remainder == 0) ? 0 : 1);
 
-        free = get_free_db(dbs,size_in_dbs);
+        free = get_free_db(dbs,size_in_dbs,DB_COUNT);
         free_inode = get_free_inode(inode_table);
 
         if ((free_inode != -1) && (free != -1)){

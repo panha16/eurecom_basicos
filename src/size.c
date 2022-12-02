@@ -17,9 +17,8 @@ int myfs_itercount(char* array){
 }
 
 int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multiple, int stat,
-                inode_t* table, char* dbs){
+                inode_t* table, char* dbs,int DB_COUNT){
     float c = 0; char disp[3]; int found = 0;
-    
     if (strcmp(path_to_directory, "/") == 0){ // If root directory
         for (int i = 0; i < DATABLOCK_SIZE * sb.db_count; i++){
             if (dbs[i] != '\0') c++;
