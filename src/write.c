@@ -30,7 +30,7 @@ int myfs_write(superblock_t* superblock, char* input_file, char* destination_pat
             printf("Cannot write %s to %s, because source is not a file\n Exiting...\n", input_file, destination_path);
             return 1;
         }
-        
+        printf("AAAAAA !\n");
         int fd = open(input_file, O_RDONLY);
         read(fd, buf, source_size+1);
         close(fd);
@@ -83,7 +83,7 @@ DECISION1:
                         case 'y': printf("Ok, deletion... \n");
                             intmax_t minimum = time(NULL);
                             int to_delete, free_space;
-                            for (int i = 0; i < DATABLOCK_SIZE * sb.db_count; i++){
+                            for (int i = 0; i < DATABLOCK_SIZE * DB_COUNT; i++){
                                 if (dbs[i] == '\0'){
                                     free_space++;
                                 }

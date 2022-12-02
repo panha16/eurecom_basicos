@@ -25,9 +25,9 @@ int create(int size, char* fs_name){
 
     // Initializing the datablocks
     char* dbs = malloc(sizeof(char) * sb.db_count * DATABLOCK_SIZE); 
-    for (i=0; i<= sb.db_count * DATABLOCK_SIZE; i++){  // Initializing the amount of datablocks according to the size indicated by the user
+/*     for (i=0; i<= sb.db_count * DATABLOCK_SIZE; i++){  // Initializing the amount of datablocks according to the size indicated by the user
         strcpy(&dbs[i], "\0"); // Using the empty characters to fill one datablock
-        }
+        } */ 
     
 
     FILE* file;
@@ -42,8 +42,8 @@ int create(int size, char* fs_name){
     }
    
     // Writing the datablocks
-    fwrite (&(dbs[i]), DATABLOCK_SIZE , sb.db_count, file);
-    
+/*     fwrite (&(dbs[i]), DATABLOCK_SIZE , sb.db_count, file);
+ */    
     fclose(file);
     return 0;
 }
