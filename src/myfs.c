@@ -44,7 +44,7 @@ int main(int argc, char* argv[]){
     // --------------------------- CREATE ------------------------ //
     if ((strcmp(argv[2],commands[0]) == 0)){
         printf("create command recognized\n");
-        if (create(atoi(argv[3]),fs_name) == 0) printf("successfully created file system %s\n",fs_name);
+        if (myfs_create(atoi(argv[3]),fs_name) == 0) printf("successfully created file system %s\n",fs_name);
 
 
     }
@@ -57,8 +57,6 @@ int main(int argc, char* argv[]){
 
     int DB_COUNT = superblock.db_count;
     char* datablocks = malloc(sizeof(char)*DB_COUNT*DATABLOCK_SIZE); 
-
-    struct stat fs_file_stat;
 
     // loading the saved filesystem
     myfs_load(fs_name, superblock, inode_table, datablocks);

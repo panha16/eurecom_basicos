@@ -6,7 +6,7 @@
 #include "fs.h"
 
 
-int create(int size, char* fs_name){
+int myfs_create(int size, char* fs_name){
     superblock_t sb;
     sb.size = size*1000000;
     sb.inode_pt = 16;

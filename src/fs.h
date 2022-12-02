@@ -29,12 +29,15 @@ typedef struct{
 } superblock_t;
 
 
+ssize_t read(int fd, void *buf, size_t count);
+int close(int fd);
 void ls(const char* dir);
 inode_t get_inode(char* file_or_directory_path, inode_t* inode_table);
 int get_free_inode(inode_t* inode_table);
 bool is_inode_free(int inode_nb, int* inode_table);
 int myfs_size(char* fs_name, char* path_to_directory, int recursive, char multiple, int stat, inode_t* table, char* dbs,int DB_COUNT);
 int myfs_write(superblock_t* superblock, char* input_file, char* destination_path, inode_t* inode_table, char* dbs, char* fs_name);
+int myfs_create(int size, char* fs_name);
 int get_free_db(char* datablocks, int size_in_dbs,int nb_db);
 int load_inodes(char* fsname, inode_t* inode_table);
 int remove_file(char* fs_name,char *file_or_directory_path, inode_t* inode_table, char* datablocks);
