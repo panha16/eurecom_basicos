@@ -17,7 +17,7 @@ make
 ./bin/myfs /tmp/FS write ./test.txt /internaldirectory1/foo
 ```
 
-More tests are provided in the `commands.txt` file.
+More tests are provided in the `doc/commands.txt` file.
 
 ## Structure 
 | **Superblock** | **Inodes**   | **Datablocks** |
