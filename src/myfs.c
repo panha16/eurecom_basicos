@@ -158,5 +158,13 @@ int main(int argc, char* argv[]){
     }
     // ------------------------ END OF READ --------------------------- //
 
+
+    // ------------------------ LS --------------------------- //
+    else if (strcmp(argv[2],commands[5]) == 0){
+        printf("ls command recognized\n");
+        ls (argv[3]);
+    }
+    // ------------------------ END OF LS --------------------------- //
+
     exit (0);
 }
