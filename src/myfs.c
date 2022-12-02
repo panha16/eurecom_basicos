@@ -43,10 +43,7 @@ int main(int argc, char* argv[]){
 
     // --------------------------- CREATE ------------------------ //
     if ((strcmp(argv[2],commands[0]) == 0)){
-        printf("create command recognized\n");
         if (myfs_create(atoi(argv[3]),fs_name) == 0) printf("successfully created file system %s\n",fs_name);
-
-
     }
 
     FILE* infile = fopen(fs_name, "rb");
@@ -120,7 +117,6 @@ int main(int argc, char* argv[]){
     // ------------------------ REMOVE --------------------------- //
 
     else if (strcmp(argv[2],commands[3])==0){     
-        printf("remove command recognized \n");
         //checking that input is a dir or not
         if (S_ISDIR(src_file_stat.st_mode)){
             printf("file to delete is a directory !\n");
@@ -146,12 +142,10 @@ int main(int argc, char* argv[]){
 
     // ------------------------ READ --------------------------- //
     else if (strcmp(argv[2],commands[2]) == 0){
-        printf("read command recognized \n");
         if (S_ISDIR(src_file_stat.st_mode)){
             printf("cannot read a directory ! \n");
         }
         else{
-            printf("file content is following : \n");
             read_file(fs_name,argv[3],datablocks,inode_table);
         }
     }
@@ -160,10 +154,9 @@ int main(int argc, char* argv[]){
 
     // ------------------------ LS --------------------------- //
     else if (strcmp(argv[2],commands[5]) == 0){
-        printf("ls command recognized\n");
         ls (argv[3]);
     }
     // ------------------------ END OF LS --------------------------- //
-
+    free(datablocks);
     exit (0);
 }

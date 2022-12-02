@@ -1,0 +1,14 @@
+./bin/myfs /tmp/FS create 10
+./bin/myfs /tmp/FS write ./test.txt /intern/foo1
+./bin/myfs /tmp/FS write ./two.txt /intern/foo2
+./bin/myfs /tmp/FS write ./three.txt /intern/foo3
+./bin/myfs /tmp/FS read /intern/foo1
+./bin/myfs /tmp/FS read /intern/foo2
+./bin/myfs /tmp/FS ls /intern/foo
+./bin/myfs /tmp/FS size /intern
+./bin/myfs /tmp/FS size /intern/foo1
+./bin/myfs /tmp/FS size /intern/foo2
+./bin/myfs /tmp/FS remove /intern/foo1
+./bin/myfs /tmp/FS size /intern/foo1
+./bin/myfs /tmp/FS size /intern/foo1
+./bin/myfs /tmp/FS read /intern/foo1
